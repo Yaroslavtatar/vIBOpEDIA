@@ -1,0 +1,6 @@
+{
+  "name": "Вайбопедия — Энциклопедия нового времени",
+  "description": "Современная открытая пользовательская энциклопедия. Знания создаются вместе.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
