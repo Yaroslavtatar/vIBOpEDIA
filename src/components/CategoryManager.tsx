@@ -32,7 +32,7 @@ const AVAILABLE_ICONS = [
   { name: 'Zap', label: 'Молния (Zap)' },
   { name: 'BookOpen', label: 'Книга (BookOpen)' },
   { name: 'Terminal', label: 'Терминал (Terminal)' },
-  { name: 'Sparkles', label: 'ИИ (Sparkles)' },
+  { name: 'Sparkles', label: 'Искры (Sparkles)' },
   { name: 'Layers', label: 'Слои (Layers)' }
 ];
 

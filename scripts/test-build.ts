@@ -137,6 +137,12 @@ async function main() {
     if (!dockerfile.includes('AS builder') && !dockerfile.includes('AS runner')) {
       throw new Error('Dockerfile должен использовать multi-stage сборку');
     }
+    if (dockerfile.toLowerCase().includes('alpine')) {
+      throw new Error('Dockerfile не должен использовать Alpine (musl), так как Rolldown/Vite и better-sqlite3 требуют glibc окружение');
+    }
+    if (!dockerfile.includes('node:22')) {
+      throw new Error('Dockerfile должен использовать Node.js 22+ (LTS) для поддержки better-sqlite3@13+');
+    }
     if (!dockerfile.includes('EXPOSE 3000')) {
       throw new Error('В Dockerfile отсутствует инструкция EXPOSE 3000');
     }

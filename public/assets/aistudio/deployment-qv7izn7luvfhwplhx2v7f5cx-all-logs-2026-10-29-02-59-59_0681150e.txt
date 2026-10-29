@@ -1,0 +1,635 @@
+2026-Oct-29 02:58:52 Docker 29.9.2 with BuildKit and Buildx detected on deployment server (localhost).
+2026-Oct-29 02:58:52 Starting deployment of Yaroslavtatar/vIBOpEDIA:main to localhost.
+2026-Oct-29 02:58:53 Preparing container with helper image: docker.io/coollabsio/coolify-helper:1.0.19
+2026-Oct-29 02:58:53 [DEBUG] [CMD]: docker stop --timeout=30 'qv7izn7luvfhwplhx2v7f5cx'
+2026-Oct-29 02:58:53 [DEBUG] Error response from daemon: No such container: qv7izn7luvfhwplhx2v7f5cx
+2026-Oct-29 02:58:53 [DEBUG] [CMD]: docker run -d --network 'coolify' --name qv7izn7luvfhwplhx2v7f5cx  --rm -v /root/.docker/buildx:/root/.docker/buildx -v /var/run/docker.sock:/var/run/docker.sock  docker.io/coollabsio/coolify-helper:1.0.19
+2026-Oct-29 02:58:53 [DEBUG] 96d4132c49201759daad50be664569c5c0fc612e3aee12200174ee06fb3a401b
+2026-Oct-29 02:58:56 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'GIT_SSH_COMMAND="ssh -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -p 22 -o Port=22 -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git ls-remote '\''https://x-access-token:<REDACTED>@github.com/Yaroslavtatar/vIBOpEDIA.git'\'' '\''refs/heads/main'\'''
+2026-Oct-29 02:58:56 [DEBUG] 5fd885b4f7f1aa1742504bd95188b55d6fe045c8	refs/heads/main
+2026-Oct-29 02:58:56 ----------------------------------------
+2026-Oct-29 02:58:56 Importing Yaroslavtatar/vIBOpEDIA:main (commit sha 5fd885b4f7f1aa1742504bd95188b55d6fe045c8) to /artifacts/qv7izn7luvfhwplhx2v7f5cx.
+2026-Oct-29 02:58:57 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' clone --depth=1 --recurse-submodules --shallow-submodules -b '\''main'\'' '\''https://x-access-token:<REDACTED>@github.com/Yaroslavtatar/vIBOpEDIA.git'\'' '\''/artifacts/qv7izn7luvfhwplhx2v7f5cx'\'' && cd '\''/artifacts/qv7izn7luvfhwplhx2v7f5cx'\'' && echo '\''Fetching the commit.'\'' && GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' fetch --depth=1 origin '\''5fd885b4f7f1aa1742504bd95188b55d6fe045c8'\'' && git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' -c advice.detachedHead=false checkout '\''5fd885b4f7f1aa1742504bd95188b55d6fe045c8'\'' >/dev/null 2>&1 && cd '\''/artifacts/qv7izn7luvfhwplhx2v7f5cx'\'' && if [ -f .gitmodules ]; then echo '\''Updating submodules.'\'' && git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' submodule sync && GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' submodule update --init --recursive --depth=1; fi && cd '\''/artifacts/qv7izn7luvfhwplhx2v7f5cx'\'' && if git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' lfs ls-files -n | grep -q .; then echo '\''Downloading Git LFS objects.'\'' && GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' lfs pull; fi'
+2026-Oct-29 02:58:57 [DEBUG] Cloning into '/artifacts/qv7izn7luvfhwplhx2v7f5cx'...
+2026-Oct-29 02:58:58 [DEBUG] Fetching the commit.
+2026-Oct-29 02:58:59 [DEBUG] From https://github.com/Yaroslavtatar/vIBOpEDIA
+2026-Oct-29 02:58:59 [DEBUG] * branch            5fd885b4f7f1aa1742504bd95188b55d6fe045c8 -> FETCH_HEAD
+2026-Oct-29 02:58:59 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'cd /artifacts/qv7izn7luvfhwplhx2v7f5cx && git log -1 '\''5fd885b4f7f1aa1742504bd95188b55d6fe045c8'\'' --pretty=%B'
+2026-Oct-29 02:58:59 [DEBUG] build: optimize deployment and add CI validation
+2026-Oct-29 02:58:59 [DEBUG] 
+2026-Oct-29 02:58:59 [DEBUG] - Introduce multi-stage Docker build with a dedicated test stage
+2026-Oct-29 02:58:59 [DEBUG] - Add `test:build` script for verifying application integrity
+2026-Oct-29 02:58:59 [DEBUG] - Enable configurable database path via `DATABASE_PATH`
+2026-Oct-29 02:58:59 [DEBUG] - Improve `install.sh` with `npm ci` support and clear guidance
+2026-Oct-29 02:58:59 [DEBUG] - Update Dockerfile and Compose for production stability
+2026-Oct-29 02:59:00 Image not found (poil3oa03sh832fl82t0fqk2:5fd885b4f7f1aa1742504bd95188b55d6fe045c8). Building new image.
+2026-Oct-29 02:59:01 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'cat /artifacts/qv7izn7luvfhwplhx2v7f5cx/Dockerfile'
+2026-Oct-29 02:59:01 [DEBUG] # syntax=docker/dockerfile:1
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # ==============================================================================
+2026-Oct-29 02:59:01 [DEBUG] # Multi-stage Dockerfile for Vibopedia (Coolify & Production Ready)
+2026-Oct-29 02:59:01 [DEBUG] # Features:
+2026-Oct-29 02:59:01 [DEBUG] # - Multi-stage caching for minimal image size and fast rebuilds
+2026-Oct-29 02:59:01 [DEBUG] # - Native C++ build support for better-sqlite3 on Alpine Linux
+2026-Oct-29 02:59:01 [DEBUG] # - Integrated build verification test stage (test:build)
+2026-Oct-29 02:59:01 [DEBUG] # - Secure non-root execution (user: node)
+2026-Oct-29 02:59:01 [DEBUG] # - Persistent SQLite volume storage (/app/data)
+2026-Oct-29 02:59:01 [DEBUG] # - Container healthcheck (/api/settings)
+2026-Oct-29 02:59:01 [DEBUG] # ==============================================================================
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 1: Base Alpine Environment
+2026-Oct-29 02:59:01 [DEBUG] FROM node:20-alpine AS base
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] # Install system utilities needed for runtime and healthcheck
+2026-Oct-29 02:59:01 [DEBUG] RUN apk add --no-cache curl wget libc6-compat
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 2: Dependencies & Native Build Tools
+2026-Oct-29 02:59:01 [DEBUG] FROM base AS dependencies
+2026-Oct-29 02:59:01 [DEBUG] # Install tools required to compile better-sqlite3 native bindings
+2026-Oct-29 02:59:01 [DEBUG] RUN apk add --no-cache python3 make g++ gcc linux-headers
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] COPY package*.json ./
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Install all dependencies (including devDependencies needed for build & test)
+2026-Oct-29 02:59:01 [DEBUG] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 3: Testing & Validation
+2026-Oct-29 02:59:01 [DEBUG] FROM dependencies AS test
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] COPY . .
+2026-Oct-29 02:59:01 [DEBUG] # Run all build verification tests (TypeScript, Vite build, SQLite schema, Docker validation)
+2026-Oct-29 02:59:01 [DEBUG] RUN npm run test:build
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 4: Frontend Builder
+2026-Oct-29 02:59:01 [DEBUG] FROM dependencies AS builder
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] COPY . .
+2026-Oct-29 02:59:01 [DEBUG] # Compile Vite frontend assets to ./dist
+2026-Oct-29 02:59:01 [DEBUG] RUN npm run build
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 5: Production Runner
+2026-Oct-29 02:59:01 [DEBUG] FROM base AS runner
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] ENV NODE_ENV=production
+2026-Oct-29 02:59:01 [DEBUG] ENV PORT=3000
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Copy node_modules from dependencies stage (contains compiled better-sqlite3)
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=dependencies /app/node_modules ./node_modules
+2026-Oct-29 02:59:01 [DEBUG] # Copy compiled frontend dist from builder stage
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/dist ./dist
+2026-Oct-29 02:59:01 [DEBUG] # Copy backend application files and scripts
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/package*.json ./
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/server.ts ./server.ts
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/src ./src
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/tsconfig.json ./tsconfig.json
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/scripts ./scripts
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Prepare persistent data directory with proper ownership
+2026-Oct-29 02:59:01 [DEBUG] RUN mkdir -p /app/data && chown -R node:node /app
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # SQLite persistent data volume
+2026-Oct-29 02:59:01 [DEBUG] VOLUME ["/app/data"]
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Use standard non-root node user
+2026-Oct-29 02:59:01 [DEBUG] USER node
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] EXPOSE 3000
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Container healthcheck
+2026-Oct-29 02:59:01 [DEBUG] HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+2026-Oct-29 02:59:01 [DEBUG] CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/settings || exit 1
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Start Vibopedia production server
+2026-Oct-29 02:59:01 [DEBUG] CMD ["npm", "start"]
+2026-Oct-29 02:59:01 [DEBUG] Creating build-time .env file in /artifacts (outside Docker context).
+2026-Oct-29 02:59:01 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'cat /artifacts/qv7izn7luvfhwplhx2v7f5cx/Dockerfile'
+2026-Oct-29 02:59:01 [DEBUG] # syntax=docker/dockerfile:1
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # ==============================================================================
+2026-Oct-29 02:59:01 [DEBUG] # Multi-stage Dockerfile for Vibopedia (Coolify & Production Ready)
+2026-Oct-29 02:59:01 [DEBUG] # Features:
+2026-Oct-29 02:59:01 [DEBUG] # - Multi-stage caching for minimal image size and fast rebuilds
+2026-Oct-29 02:59:01 [DEBUG] # - Native C++ build support for better-sqlite3 on Alpine Linux
+2026-Oct-29 02:59:01 [DEBUG] # - Integrated build verification test stage (test:build)
+2026-Oct-29 02:59:01 [DEBUG] # - Secure non-root execution (user: node)
+2026-Oct-29 02:59:01 [DEBUG] # - Persistent SQLite volume storage (/app/data)
+2026-Oct-29 02:59:01 [DEBUG] # - Container healthcheck (/api/settings)
+2026-Oct-29 02:59:01 [DEBUG] # ==============================================================================
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 1: Base Alpine Environment
+2026-Oct-29 02:59:01 [DEBUG] FROM node:20-alpine AS base
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] # Install system utilities needed for runtime and healthcheck
+2026-Oct-29 02:59:01 [DEBUG] RUN apk add --no-cache curl wget libc6-compat
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 2: Dependencies & Native Build Tools
+2026-Oct-29 02:59:01 [DEBUG] FROM base AS dependencies
+2026-Oct-29 02:59:01 [DEBUG] # Install tools required to compile better-sqlite3 native bindings
+2026-Oct-29 02:59:01 [DEBUG] RUN apk add --no-cache python3 make g++ gcc linux-headers
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] COPY package*.json ./
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Install all dependencies (including devDependencies needed for build & test)
+2026-Oct-29 02:59:01 [DEBUG] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 3: Testing & Validation
+2026-Oct-29 02:59:01 [DEBUG] FROM dependencies AS test
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] COPY . .
+2026-Oct-29 02:59:01 [DEBUG] # Run all build verification tests (TypeScript, Vite build, SQLite schema, Docker validation)
+2026-Oct-29 02:59:01 [DEBUG] RUN npm run test:build
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 4: Frontend Builder
+2026-Oct-29 02:59:01 [DEBUG] FROM dependencies AS builder
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] COPY . .
+2026-Oct-29 02:59:01 [DEBUG] # Compile Vite frontend assets to ./dist
+2026-Oct-29 02:59:01 [DEBUG] RUN npm run build
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Stage 5: Production Runner
+2026-Oct-29 02:59:01 [DEBUG] FROM base AS runner
+2026-Oct-29 02:59:01 [DEBUG] WORKDIR /app
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] ENV NODE_ENV=production
+2026-Oct-29 02:59:01 [DEBUG] ENV PORT=3000
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Copy node_modules from dependencies stage (contains compiled better-sqlite3)
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=dependencies /app/node_modules ./node_modules
+2026-Oct-29 02:59:01 [DEBUG] # Copy compiled frontend dist from builder stage
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/dist ./dist
+2026-Oct-29 02:59:01 [DEBUG] # Copy backend application files and scripts
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/package*.json ./
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/server.ts ./server.ts
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/src ./src
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/tsconfig.json ./tsconfig.json
+2026-Oct-29 02:59:01 [DEBUG] COPY --from=builder /app/scripts ./scripts
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Prepare persistent data directory with proper ownership
+2026-Oct-29 02:59:01 [DEBUG] RUN mkdir -p /app/data && chown -R node:node /app
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # SQLite persistent data volume
+2026-Oct-29 02:59:01 [DEBUG] VOLUME ["/app/data"]
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Use standard non-root node user
+2026-Oct-29 02:59:01 [DEBUG] USER node
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] EXPOSE 3000
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Container healthcheck
+2026-Oct-29 02:59:01 [DEBUG] HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+2026-Oct-29 02:59:01 [DEBUG] CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/settings || exit 1
+2026-Oct-29 02:59:01 [DEBUG] 
+2026-Oct-29 02:59:01 [DEBUG] # Start Vibopedia production server
+2026-Oct-29 02:59:01 [DEBUG] CMD ["npm", "start"]
+2026-Oct-29 02:59:01 [DEBUG] Final Dockerfile:
+2026-Oct-29 02:59:01 ----------------------------------------
+2026-Oct-29 02:59:01 Building docker image started.
+2026-Oct-29 02:59:01 To check the current progress, click on Show Debug Logs.
+2026-Oct-29 02:59:02 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'cat /artifacts/build.sh'
+2026-Oct-29 02:59:02 [DEBUG] cd /artifacts/qv7izn7luvfhwplhx2v7f5cx && set -a && source /artifacts/build-time.env && set +a && DOCKER_BUILDKIT=1 docker build  --add-host coolify:10.0.1.18 --add-host coolify-db:10.0.1.15 --add-host coolify-redis:10.0.1.6 --add-host coolify-sentinel:10.0.1.2 --network host -f /artifacts/qv7izn7luvfhwplhx2v7f5cx/Dockerfile --progress plain -t poil3oa03sh832fl82t0fqk2:5fd885b4f7f1aa1742504bd95188b55d6fe045c8 --build-arg 'COOLIFY_URL' --build-arg 'COOLIFY_FQDN' --build-arg 'COOLIFY_BRANCH' --build-arg 'COOLIFY_RESOURCE_UUID' --build-arg 'COOLIFY_BUILD_SECRETS_HASH=<REDACTED>' --build-arg 'COOLIFY_URL' --build-arg 'COOLIFY_FQDN' --build-arg 'COOLIFY_BRANCH' --build-arg 'COOLIFY_RESOURCE_UUID' /artifacts/qv7izn7luvfhwplhx2v7f5cx
+2026-Oct-29 02:59:03 [DEBUG] [CMD]: docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'bash /artifacts/build.sh'
+2026-Oct-29 02:59:03 [DEBUG] #0 building with "default" instance using docker driver
+2026-Oct-29 02:59:03 [DEBUG] 
+2026-Oct-29 02:59:03 [DEBUG] #1 [internal] load build definition from Dockerfile
+2026-Oct-29 02:59:03 [DEBUG] #1 transferring dockerfile: 3.84kB done
+2026-Oct-29 02:59:03 [DEBUG] #1 DONE 0.1s
+2026-Oct-29 02:59:03 [DEBUG] #2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+2026-Oct-29 02:59:05 [DEBUG] #2 DONE 1.8s
+2026-Oct-29 02:59:05 [DEBUG] #3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+2026-Oct-29 02:59:05 [DEBUG] #3 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.1s done
+2026-Oct-29 02:59:05 [DEBUG] #3 DONE 0.1s
+2026-Oct-29 02:59:05 [DEBUG] #3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+2026-Oct-29 02:59:05 [DEBUG] #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 0B / 14.28MB 0.2s
+2026-Oct-29 02:59:05 [DEBUG] #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 1.05MB / 14.28MB 0.5s
+2026-Oct-29 02:59:05 [DEBUG] #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 8.39MB / 14.28MB 0.6s
+2026-Oct-29 02:59:05 [DEBUG] #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 14.28MB / 14.28MB 0.7s done
+2026-Oct-29 02:59:06 [DEBUG] #3 extracting sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62
+2026-Oct-29 02:59:06 [DEBUG] #3 extracting sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 0.3s done
+2026-Oct-29 02:59:06 [DEBUG] #3 DONE 1.2s
+2026-Oct-29 02:59:06 [DEBUG] #4 [internal] load metadata for docker.io/library/node:20-alpine
+2026-Oct-29 02:59:08 [DEBUG] #4 DONE 1.6s
+2026-Oct-29 02:59:08 [DEBUG] #5 [internal] load .dockerignore
+2026-Oct-29 02:59:08 [DEBUG] #5 transferring context: 234B done
+2026-Oct-29 02:59:08 [DEBUG] #5 DONE 0.1s
+2026-Oct-29 02:59:08 [DEBUG] #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:08 [DEBUG] #6 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.1s done
+2026-Oct-29 02:59:08 [DEBUG] #6 DONE 0.4s
+2026-Oct-29 02:59:08 [DEBUG] 
+2026-Oct-29 02:59:08 [DEBUG] #7 [internal] load build context
+2026-Oct-29 02:59:08 [DEBUG] #7 transferring context: 1.24MB 0.0s done
+2026-Oct-29 02:59:08 [DEBUG] #7 DONE 0.2s
+2026-Oct-29 02:59:08 [DEBUG] #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:08 [DEBUG] #6 extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb
+2026-Oct-29 02:59:08 [DEBUG] #6 extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 0.2s done
+2026-Oct-29 02:59:08 [DEBUG] #6 DONE 0.6s
+2026-Oct-29 02:59:09 [DEBUG] #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:09 [DEBUG] #6 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287
+2026-Oct-29 02:59:10 [DEBUG] #6 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 1.8s done
+2026-Oct-29 02:59:10 [DEBUG] #6 DONE 2.3s
+2026-Oct-29 02:59:10 [DEBUG] #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:10 [DEBUG] #6 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122
+2026-Oct-29 02:59:10 [DEBUG] #6 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 0.2s done
+2026-Oct-29 02:59:10 [DEBUG] #6 DONE 2.5s
+2026-Oct-29 02:59:11 [DEBUG] #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:11 [DEBUG] #6 extracting sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 0.1s done
+2026-Oct-29 02:59:11 [DEBUG] #6 DONE 2.7s
+2026-Oct-29 02:59:11 [DEBUG] #8 [base 2/3] WORKDIR /app
+2026-Oct-29 02:59:11 [DEBUG] #8 DONE 0.8s
+2026-Oct-29 02:59:12 [DEBUG] #9 [base 3/3] RUN apk add --no-cache curl wget libc6-compat
+2026-Oct-29 02:59:13 [DEBUG] #9 1.410 ( 1/14) Installing brotli-libs (1.2.1-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.466 ( 2/14) Installing c-ares (1.34.9-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.511 ( 3/14) Installing libunistring (1.4.1-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.588 ( 4/14) Installing libidn2 (2.3.8-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.635 ( 5/14) Installing nghttp2-libs (1.69.0-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.682 ( 6/14) Installing libpsl (0.21.5-r3)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.725 ( 7/14) Installing zstd-libs (1.5.7-r2)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.781 ( 8/14) Installing libcurl (8.23.0-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.833 ( 9/14) Installing curl (8.23.0-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.880 (10/14) Installing musl-obstack (1.2.3-r2)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.923 (11/14) Installing libucontext (1.3.3-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 1.969 (12/14) Installing gcompat (1.1.0-r4)
+2026-Oct-29 02:59:13 [DEBUG] #9 2.013 (13/14) Installing pcre2 (10.49-r0)
+2026-Oct-29 02:59:13 [DEBUG] #9 2.069 (14/14) Installing wget (1.25.0-r2)
+2026-Oct-29 02:59:14 [DEBUG] #9 2.128 Executing busybox-1.37.0-r30.trigger
+2026-Oct-29 02:59:14 [DEBUG] #9 2.139 OK: 17.2 MiB in 32 packages
+2026-Oct-29 02:59:14 [DEBUG] #9 DONE 2.3s
+2026-Oct-29 02:59:14 [DEBUG] #10 [dependencies 1/4] RUN apk add --no-cache python3 make g++ gcc linux-headers
+2026-Oct-29 02:59:14 [DEBUG] #10 ...
+2026-Oct-29 02:59:14 [DEBUG] 
+2026-Oct-29 02:59:14 [DEBUG] #11 [runner 1/9] WORKDIR /app
+2026-Oct-29 02:59:14 [DEBUG] #11 DONE 0.2s
+2026-Oct-29 02:59:14 [DEBUG] #10 [dependencies 1/4] RUN apk add --no-cache python3 make g++ gcc linux-headers
+2026-Oct-29 02:59:15 [DEBUG] #10 1.265 ( 1/30) Upgrading musl (1.2.5-r23 -> 1.2.5-r24)
+2026-Oct-29 02:59:15 [DEBUG] #10 1.328 ( 2/30) Installing libstdc++-dev (15.2.0-r2)
+2026-Oct-29 02:59:15 [DEBUG] #10 1.631 ( 3/30) Installing jansson (2.14.1-r0)
+2026-Oct-29 02:59:16 [DEBUG] #10 1.684 ( 4/30) Installing binutils (2.45.1-r0)
+2026-Oct-29 02:59:16 [DEBUG] #10 1.827 ( 5/30) Installing libgomp (15.2.0-r2)
+2026-Oct-29 02:59:16 [DEBUG] #10 1.884 ( 6/30) Installing libatomic (15.2.0-r2)
+2026-Oct-29 02:59:16 [DEBUG] #10 1.935 ( 7/30) Installing gmp (6.3.0-r4)
+2026-Oct-29 02:59:16 [DEBUG] #10 1.993 ( 8/30) Installing isl26 (0.26-r1)
+2026-Oct-29 02:59:16 [DEBUG] #10 2.073 ( 9/30) Installing mpfr4 (4.2.2-r0)
+2026-Oct-29 02:59:16 [DEBUG] #10 2.135 (10/30) Installing mpc1 (1.3.1-r1)
+2026-Oct-29 02:59:16 [DEBUG] #10 2.188 (11/30) Installing gcc (15.2.0-r2)
+2026-Oct-29 02:59:17 [DEBUG] #10 3.719 (12/30) Installing musl-dev (1.2.5-r24)
+2026-Oct-29 02:59:18 [DEBUG] #10 3.922 (13/30) Installing g++ (15.2.0-r2)
+2026-Oct-29 02:59:18 [DEBUG] #10 4.593 (14/30) Installing linux-headers (6.16.12-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 4.850 (15/30) Installing make (4.4.1-r3)
+2026-Oct-29 02:59:19 [DEBUG] #10 4.906 (16/30) Installing libexpat (2.9.0-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 4.958 (17/30) Installing libbz2 (1.0.8-r6)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.011 (18/30) Installing libffi (3.5.2-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.062 (19/30) Installing gdbm (1.26-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.115 (20/30) Installing xz-libs (5.8.4-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.170 (21/30) Installing mpdecimal (4.0.1-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.225 (22/30) Installing ncurses-terminfo-base (6.5_p20251123-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.280 (23/30) Installing libncursesw (6.5_p20251123-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.337 (24/30) Installing libpanelw (6.5_p20251123-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.387 (25/30) Installing readline (8.3.1-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.446 (26/30) Installing sqlite-libs (3.53.4-r0)
+2026-Oct-29 02:59:19 [DEBUG] #10 5.523 (27/30) Installing python3 (3.12.16-r0)
+2026-Oct-29 02:59:20 [DEBUG] #10 5.925 (28/30) Installing python3-pycache-pyc0 (3.12.16-r0)
+2026-Oct-29 02:59:20 [DEBUG] #10 6.169 (29/30) Installing pyc (3.12.16-r0)
+2026-Oct-29 02:59:20 [DEBUG] #10 6.169 (30/30) Installing python3-pyc (3.12.16-r0)
+2026-Oct-29 02:59:20 [DEBUG] #10 6.169 Executing busybox-1.37.0-r30.trigger
+2026-Oct-29 02:59:20 [DEBUG] #10 6.183 OK: 312.8 MiB in 61 packages
+2026-Oct-29 02:59:21 [DEBUG] #10 DONE 6.9s
+2026-Oct-29 02:59:21 [DEBUG] #12 [dependencies 2/4] WORKDIR /app
+2026-Oct-29 02:59:21 [DEBUG] #12 DONE 0.2s
+2026-Oct-29 02:59:21 [DEBUG] #13 [dependencies 3/4] COPY package*.json ./
+2026-Oct-29 02:59:21 [DEBUG] #13 DONE 0.2s
+2026-Oct-29 02:59:21 [DEBUG] #14 [dependencies 4/4] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 02:59:22 [DEBUG] #14 1.104 npm warn EBADENGINE Unsupported engine {
+2026-Oct-29 02:59:22 [DEBUG] #14 1.104 npm warn EBADENGINE   package: 'better-sqlite3@13.0.3',
+2026-Oct-29 02:59:22 [DEBUG] #14 1.104 npm warn EBADENGINE   required: { node: '>=22' },
+2026-Oct-29 02:59:22 [DEBUG] #14 1.104 npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
+2026-Oct-29 02:59:22 [DEBUG] #14 1.104 npm warn EBADENGINE }
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 added 184 packages, and audited 185 packages in 14s
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 38 packages are looking for funding
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76   run `npm fund` for details
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 found 0 vulnerabilities
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 npm notice
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 npm notice New major version of npm available! 10.8.2 -> 12.2.1
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 npm notice To update run: npm install -g npm@12.2.1
+2026-Oct-29 02:59:36 [DEBUG] #14 14.76 npm notice
+2026-Oct-29 02:59:36 [DEBUG] #14 DONE 15.5s
+2026-Oct-29 02:59:37 [DEBUG] #15 [builder 1/3] WORKDIR /app
+2026-Oct-29 02:59:37 [DEBUG] #15 DONE 0.3s
+2026-Oct-29 02:59:37 [DEBUG] #16 [builder 2/3] COPY . .
+2026-Oct-29 02:59:37 [DEBUG] #16 DONE 0.2s
+2026-Oct-29 02:59:37 [DEBUG] #17 [builder 3/3] RUN npm run build
+2026-Oct-29 02:59:37 [DEBUG] #17 0.456
+2026-Oct-29 02:59:37 [DEBUG] #17 0.456 > react-example@0.0.0 build
+2026-Oct-29 02:59:37 [DEBUG] #17 0.456 > vite build
+2026-Oct-29 02:59:37 [DEBUG] #17 0.456
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712 file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:601
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712 			const error = /* @__PURE__ */ new Error("Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.");
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712 			                              ^
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712 Error: Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:601:34
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:9:49
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     ... 2 lines matching cause stack trace ...
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712   cause: Error: Cannot find module '@rolldown/binding-wasm32-wasi'
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712   Require stack:
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712   - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       ... 6 lines matching cause stack trace ...
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     cause: Error: Cannot find module './rolldown-binding.wasi.cjs'
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     Require stack:
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         ... 6 lines matching cause stack trace ...
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       cause: Error: Cannot find module '@rolldown/binding-linux-x64-musl'
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       Require stack:
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712           at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712           ... 6 lines matching cause stack trace ...
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712           at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         cause: Error: Cannot find module './rolldown-binding.linux-x64-musl.node'
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         Require stack:
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at Array.reduce (<anonymous>)
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at createLoadErrorChain (file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:488:17)
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:602:18
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:9:49
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at file:///app/node_modules/rolldown/dist/shared/parse-B7LUicIJ.mjs:3:46
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712             at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712           cause: null
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712         }
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712       }
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712     }
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712   }
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712 }
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712
+2026-Oct-29 02:59:38 [DEBUG] #17 0.712 Node.js v20.20.2
+2026-Oct-29 02:59:38 [DEBUG] #17 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Oct-29 02:59:39 [DEBUG] ------
+2026-Oct-29 02:59:39 [DEBUG] > [builder 3/3] RUN npm run build:
+2026-Oct-29 02:59:39 [DEBUG] 0.712             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-Oct-29 02:59:39 [DEBUG] 0.712             at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 [DEBUG] 0.712           cause: null
+2026-Oct-29 02:59:39 [DEBUG] 0.712         }
+2026-Oct-29 02:59:39 [DEBUG] 0.712       }
+2026-Oct-29 02:59:39 [DEBUG] 0.712     }
+2026-Oct-29 02:59:39 [DEBUG] 0.712   }
+2026-Oct-29 02:59:39 [DEBUG] 0.712 }
+2026-Oct-29 02:59:39 [DEBUG] 0.712
+2026-Oct-29 02:59:39 [DEBUG] 0.712 Node.js v20.20.2
+2026-Oct-29 02:59:39 [DEBUG] ------
+2026-Oct-29 02:59:39 [DEBUG] Dockerfile:63
+2026-Oct-29 02:59:39 [DEBUG] --------------------
+2026-Oct-29 02:59:39 [DEBUG] 61 |     COPY . .
+2026-Oct-29 02:59:39 [DEBUG] 62 |     # Compile Vite frontend assets to ./dist
+2026-Oct-29 02:59:39 [DEBUG] 63 | >>> RUN npm run build
+2026-Oct-29 02:59:39 [DEBUG] 64 |
+2026-Oct-29 02:59:39 [DEBUG] 65 |     # Stage 5: Production Runner
+2026-Oct-29 02:59:39 [DEBUG] --------------------
+2026-Oct-29 02:59:39 [DEBUG] ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Oct-29 02:59:39 ========================================
+2026-Oct-29 02:59:39 Deployment failed: Command execution failed (exit code 1): docker exec qv7izn7luvfhwplhx2v7f5cx bash -c 'bash /artifacts/build.sh'
+2026-Oct-29 02:59:39 Error: #0 building with "default" instance using docker driver
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #1 [internal] load build definition from Dockerfile
+2026-Oct-29 02:59:39 #1 transferring dockerfile: 3.84kB done
+2026-Oct-29 02:59:39 #1 DONE 0.1s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+2026-Oct-29 02:59:39 #2 DONE 1.8s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+2026-Oct-29 02:59:39 #3 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.1s done
+2026-Oct-29 02:59:39 #3 DONE 0.1s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+2026-Oct-29 02:59:39 #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 0B / 14.28MB 0.2s
+2026-Oct-29 02:59:39 #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 1.05MB / 14.28MB 0.5s
+2026-Oct-29 02:59:39 #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 8.39MB / 14.28MB 0.6s
+2026-Oct-29 02:59:39 #3 sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 14.28MB / 14.28MB 0.7s done
+2026-Oct-29 02:59:39 #3 extracting sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62
+2026-Oct-29 02:59:39 #3 extracting sha256:9d2b4f57f9e20f33279375ce25c6ff14f30f64270ed5c7b613b2b30256754f62 0.3s done
+2026-Oct-29 02:59:39 #3 DONE 1.2s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #4 [internal] load metadata for docker.io/library/node:20-alpine
+2026-Oct-29 02:59:39 #4 DONE 1.6s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #5 [internal] load .dockerignore
+2026-Oct-29 02:59:39 #5 transferring context: 234B done
+2026-Oct-29 02:59:39 #5 DONE 0.1s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:39 #6 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.1s done
+2026-Oct-29 02:59:39 #6 DONE 0.4s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #7 [internal] load build context
+2026-Oct-29 02:59:39 #7 transferring context: 1.24MB 0.0s done
+2026-Oct-29 02:59:39 #7 DONE 0.2s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:39 #6 extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb
+2026-Oct-29 02:59:39 #6 extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 0.2s done
+2026-Oct-29 02:59:39 #6 DONE 0.6s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:39 #6 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287
+2026-Oct-29 02:59:39 #6 extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 1.8s done
+2026-Oct-29 02:59:39 #6 DONE 2.3s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:39 #6 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122
+2026-Oct-29 02:59:39 #6 extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 0.2s done
+2026-Oct-29 02:59:39 #6 DONE 2.5s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+2026-Oct-29 02:59:39 #6 extracting sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 0.1s done
+2026-Oct-29 02:59:39 #6 DONE 2.7s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #8 [base 2/3] WORKDIR /app
+2026-Oct-29 02:59:39 #8 DONE 0.8s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #9 [base 3/3] RUN apk add --no-cache curl wget libc6-compat
+2026-Oct-29 02:59:39 #9 1.410 ( 1/14) Installing brotli-libs (1.2.1-r0)
+2026-Oct-29 02:59:39 #9 1.466 ( 2/14) Installing c-ares (1.34.9-r0)
+2026-Oct-29 02:59:39 #9 1.511 ( 3/14) Installing libunistring (1.4.1-r0)
+2026-Oct-29 02:59:39 #9 1.588 ( 4/14) Installing libidn2 (2.3.8-r0)
+2026-Oct-29 02:59:39 #9 1.635 ( 5/14) Installing nghttp2-libs (1.69.0-r0)
+2026-Oct-29 02:59:39 #9 1.682 ( 6/14) Installing libpsl (0.21.5-r3)
+2026-Oct-29 02:59:39 #9 1.725 ( 7/14) Installing zstd-libs (1.5.7-r2)
+2026-Oct-29 02:59:39 #9 1.781 ( 8/14) Installing libcurl (8.23.0-r0)
+2026-Oct-29 02:59:39 #9 1.833 ( 9/14) Installing curl (8.23.0-r0)
+2026-Oct-29 02:59:39 #9 1.880 (10/14) Installing musl-obstack (1.2.3-r2)
+2026-Oct-29 02:59:39 #9 1.923 (11/14) Installing libucontext (1.3.3-r0)
+2026-Oct-29 02:59:39 #9 1.969 (12/14) Installing gcompat (1.1.0-r4)
+2026-Oct-29 02:59:39 #9 2.013 (13/14) Installing pcre2 (10.49-r0)
+2026-Oct-29 02:59:39 #9 2.069 (14/14) Installing wget (1.25.0-r2)
+2026-Oct-29 02:59:39 #9 2.128 Executing busybox-1.37.0-r30.trigger
+2026-Oct-29 02:59:39 #9 2.139 OK: 17.2 MiB in 32 packages
+2026-Oct-29 02:59:39 #9 DONE 2.3s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #10 [dependencies 1/4] RUN apk add --no-cache python3 make g++ gcc linux-headers
+2026-Oct-29 02:59:39 #10 ...
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #11 [runner 1/9] WORKDIR /app
+2026-Oct-29 02:59:39 #11 DONE 0.2s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #10 [dependencies 1/4] RUN apk add --no-cache python3 make g++ gcc linux-headers
+2026-Oct-29 02:59:39 #10 1.265 ( 1/30) Upgrading musl (1.2.5-r23 -> 1.2.5-r24)
+2026-Oct-29 02:59:39 #10 1.328 ( 2/30) Installing libstdc++-dev (15.2.0-r2)
+2026-Oct-29 02:59:39 #10 1.631 ( 3/30) Installing jansson (2.14.1-r0)
+2026-Oct-29 02:59:39 #10 1.684 ( 4/30) Installing binutils (2.45.1-r0)
+2026-Oct-29 02:59:39 #10 1.827 ( 5/30) Installing libgomp (15.2.0-r2)
+2026-Oct-29 02:59:39 #10 1.884 ( 6/30) Installing libatomic (15.2.0-r2)
+2026-Oct-29 02:59:39 #10 1.935 ( 7/30) Installing gmp (6.3.0-r4)
+2026-Oct-29 02:59:39 #10 1.993 ( 8/30) Installing isl26 (0.26-r1)
+2026-Oct-29 02:59:39 #10 2.073 ( 9/30) Installing mpfr4 (4.2.2-r0)
+2026-Oct-29 02:59:39 #10 2.135 (10/30) Installing mpc1 (1.3.1-r1)
+2026-Oct-29 02:59:39 #10 2.188 (11/30) Installing gcc (15.2.0-r2)
+2026-Oct-29 02:59:39 #10 3.719 (12/30) Installing musl-dev (1.2.5-r24)
+2026-Oct-29 02:59:39 #10 3.922 (13/30) Installing g++ (15.2.0-r2)
+2026-Oct-29 02:59:39 #10 4.593 (14/30) Installing linux-headers (6.16.12-r0)
+2026-Oct-29 02:59:39 #10 4.850 (15/30) Installing make (4.4.1-r3)
+2026-Oct-29 02:59:39 #10 4.906 (16/30) Installing libexpat (2.9.0-r0)
+2026-Oct-29 02:59:39 #10 4.958 (17/30) Installing libbz2 (1.0.8-r6)
+2026-Oct-29 02:59:39 #10 5.011 (18/30) Installing libffi (3.5.2-r0)
+2026-Oct-29 02:59:39 #10 5.062 (19/30) Installing gdbm (1.26-r0)
+2026-Oct-29 02:59:39 #10 5.115 (20/30) Installing xz-libs (5.8.4-r0)
+2026-Oct-29 02:59:39 #10 5.170 (21/30) Installing mpdecimal (4.0.1-r0)
+2026-Oct-29 02:59:39 #10 5.225 (22/30) Installing ncurses-terminfo-base (6.5_p20251123-r0)
+2026-Oct-29 02:59:39 #10 5.280 (23/30) Installing libncursesw (6.5_p20251123-r0)
+2026-Oct-29 02:59:39 #10 5.337 (24/30) Installing libpanelw (6.5_p20251123-r0)
+2026-Oct-29 02:59:39 #10 5.387 (25/30) Installing readline (8.3.1-r0)
+2026-Oct-29 02:59:39 #10 5.446 (26/30) Installing sqlite-libs (3.53.4-r0)
+2026-Oct-29 02:59:39 #10 5.523 (27/30) Installing python3 (3.12.16-r0)
+2026-Oct-29 02:59:39 #10 5.925 (28/30) Installing python3-pycache-pyc0 (3.12.16-r0)
+2026-Oct-29 02:59:39 #10 6.169 (29/30) Installing pyc (3.12.16-r0)
+2026-Oct-29 02:59:39 #10 6.169 (30/30) Installing python3-pyc (3.12.16-r0)
+2026-Oct-29 02:59:39 #10 6.169 Executing busybox-1.37.0-r30.trigger
+2026-Oct-29 02:59:39 #10 6.183 OK: 312.8 MiB in 61 packages
+2026-Oct-29 02:59:39 #10 DONE 6.9s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #12 [dependencies 2/4] WORKDIR /app
+2026-Oct-29 02:59:39 #12 DONE 0.2s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #13 [dependencies 3/4] COPY package*.json ./
+2026-Oct-29 02:59:39 #13 DONE 0.2s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #14 [dependencies 4/4] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 02:59:39 #14 1.104 npm warn EBADENGINE Unsupported engine {
+2026-Oct-29 02:59:39 #14 1.104 npm warn EBADENGINE   package: 'better-sqlite3@13.0.3',
+2026-Oct-29 02:59:39 #14 1.104 npm warn EBADENGINE   required: { node: '>=22' },
+2026-Oct-29 02:59:39 #14 1.104 npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
+2026-Oct-29 02:59:39 #14 1.104 npm warn EBADENGINE }
+2026-Oct-29 02:59:39 #14 14.76
+2026-Oct-29 02:59:39 #14 14.76 added 184 packages, and audited 185 packages in 14s
+2026-Oct-29 02:59:39 #14 14.76
+2026-Oct-29 02:59:39 #14 14.76 38 packages are looking for funding
+2026-Oct-29 02:59:39 #14 14.76   run `npm fund` for details
+2026-Oct-29 02:59:39 #14 14.76
+2026-Oct-29 02:59:39 #14 14.76 found 0 vulnerabilities
+2026-Oct-29 02:59:39 #14 14.76 npm notice
+2026-Oct-29 02:59:39 #14 14.76 npm notice New major version of npm available! 10.8.2 -> 12.2.1
+2026-Oct-29 02:59:39 #14 14.76 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+2026-Oct-29 02:59:39 #14 14.76 npm notice To update run: npm install -g npm@12.2.1
+2026-Oct-29 02:59:39 #14 14.76 npm notice
+2026-Oct-29 02:59:39 #14 DONE 15.5s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #15 [builder 1/3] WORKDIR /app
+2026-Oct-29 02:59:39 #15 DONE 0.3s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #16 [builder 2/3] COPY . .
+2026-Oct-29 02:59:39 #16 DONE 0.2s
+2026-Oct-29 02:59:39 
+2026-Oct-29 02:59:39 #17 [builder 3/3] RUN npm run build
+2026-Oct-29 02:59:39 #17 0.456
+2026-Oct-29 02:59:39 #17 0.456 > react-example@0.0.0 build
+2026-Oct-29 02:59:39 #17 0.456 > vite build
+2026-Oct-29 02:59:39 #17 0.456
+2026-Oct-29 02:59:39 #17 0.712 file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:601
+2026-Oct-29 02:59:39 #17 0.712 			const error = /* @__PURE__ */ new Error("Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.");
+2026-Oct-29 02:59:39 #17 0.712 			                              ^
+2026-Oct-29 02:59:39 #17 0.712
+2026-Oct-29 02:59:39 #17 0.712 Error: Cannot find native binding. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+2026-Oct-29 02:59:39 #17 0.712     at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:601:34
+2026-Oct-29 02:59:39 #17 0.712     at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:9:49
+2026-Oct-29 02:59:39 #17 0.712     ... 2 lines matching cause stack trace ...
+2026-Oct-29 02:59:39 #17 0.712     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 #17 0.712   cause: Error: Cannot find module '@rolldown/binding-wasm32-wasi'
+2026-Oct-29 02:59:39 #17 0.712   Require stack:
+2026-Oct-29 02:59:39 #17 0.712   - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:39 #17 0.712       at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:39 #17 0.712       ... 6 lines matching cause stack trace ...
+2026-Oct-29 02:59:39 #17 0.712       at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 #17 0.712     cause: Error: Cannot find module './rolldown-binding.wasi.cjs'
+2026-Oct-29 02:59:39 #17 0.712     Require stack:
+2026-Oct-29 02:59:39 #17 0.712     - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:39 #17 0.712         at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:39 #17 0.712         ... 6 lines matching cause stack trace ...
+2026-Oct-29 02:59:39 #17 0.712         at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 #17 0.712       cause: Error: Cannot find module '@rolldown/binding-linux-x64-musl'
+2026-Oct-29 02:59:39 #17 0.712       Require stack:
+2026-Oct-29 02:59:39 #17 0.712       - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:39 #17 0.712           at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:39 #17 0.712           ... 6 lines matching cause stack trace ...
+2026-Oct-29 02:59:39 #17 0.712           at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 #17 0.712         cause: Error: Cannot find module './rolldown-binding.linux-x64-musl.node'
+2026-Oct-29 02:59:39 #17 0.712         Require stack:
+2026-Oct-29 02:59:39 #17 0.712         - /app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs
+2026-Oct-29 02:59:39 #17 0.712             at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:495:18
+2026-Oct-29 02:59:39 #17 0.712             at Array.reduce (<anonymous>)
+2026-Oct-29 02:59:39 #17 0.712             at createLoadErrorChain (file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:488:17)
+2026-Oct-29 02:59:39 #17 0.712             at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:602:18
+2026-Oct-29 02:59:39 #17 0.712             at file:///app/node_modules/rolldown/dist/shared/binding-BMtuZhvP.mjs:9:49
+2026-Oct-29 02:59:39 #17 0.712             at file:///app/node_modules/rolldown/dist/shared/parse-B7LUicIJ.mjs:3:46
+2026-Oct-29 02:59:39 #17 0.712             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-Oct-29 02:59:39 #17 0.712             at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 #17 0.712           cause: null
+2026-Oct-29 02:59:39 #17 0.712         }
+2026-Oct-29 02:59:39 #17 0.712       }
+2026-Oct-29 02:59:39 #17 0.712     }
+2026-Oct-29 02:59:39 #17 0.712   }
+2026-Oct-29 02:59:39 #17 0.712 }
+2026-Oct-29 02:59:39 #17 0.712
+2026-Oct-29 02:59:39 #17 0.712 Node.js v20.20.2
+2026-Oct-29 02:59:39 #17 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Oct-29 02:59:39 ------
+2026-Oct-29 02:59:39 > [builder 3/3] RUN npm run build:
+2026-Oct-29 02:59:39 0.712             at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-Oct-29 02:59:39 0.712             at async ModuleLoader.import (node:internal/modules/esm/loader:606:24) {
+2026-Oct-29 02:59:39 0.712           cause: null
+2026-Oct-29 02:59:39 0.712         }
+2026-Oct-29 02:59:39 0.712       }
+2026-Oct-29 02:59:39 0.712     }
+2026-Oct-29 02:59:39 0.712   }
+2026-Oct-29 02:59:39 0.712 }
+2026-Oct-29 02:59:39 0.712
+2026-Oct-29 02:59:39 0.712 Node.js v20.20.2
+2026-Oct-29 02:59:39 ------
+2026-Oct-29 02:59:39 Dockerfile:63
+2026-Oct-29 02:59:39 --------------------
+2026-Oct-29 02:59:39 61 |     COPY . .
+2026-Oct-29 02:59:39 62 |     # Compile Vite frontend assets to ./dist
+2026-Oct-29 02:59:39 63 | >>> RUN npm run build
+2026-Oct-29 02:59:39 64 |
+2026-Oct-29 02:59:39 65 |     # Stage 5: Production Runner
+2026-Oct-29 02:59:39 --------------------
+2026-Oct-29 02:59:39 ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Oct-29 02:59:39 [DEBUG] Error type: App\Exceptions\DeploymentException
+2026-Oct-29 02:59:39 [DEBUG] Error code: 1
+2026-Oct-29 02:59:39 [DEBUG] Location: /var/www/html/app/Traits/ExecuteRemoteCommand.php:231
+2026-Oct-29 02:59:39 ========================================
+2026-Oct-29 02:59:39 Deployment failed. Removing the new version of your application.
+2026-Oct-29 02:59:39 [DEBUG] [CMD]: bash -c 'if command -v timeout >/dev/null 2>&1; then output=$(timeout -k 10s 60s docker rm -f '\''poil3oa03sh832fl82t0fqk2-20261029T025850'\'' 2>&1); exit_code=$?; else output='\'''\''; exit_code=124; fi; if [ "$exit_code" -eq 124 ]; then echo '\''__COOLIFY_CONTAINER_REMOVE_TIMEOUT__'\''; elif [ "$exit_code" -ne 0 ] && printf '\''%s'\'' "$output" | grep -q '\''No such container:'\''; then exit 0; elif [ "$exit_code" -ne 0 ]; then printf '\''%s\n'\'' "$output" >&2; else printf '\''%s\n'\'' "$output"; fi; exit $exit_code'
+2026-Oct-29 02:59:39 [DEBUG] 
+2026-Oct-29 02:59:39 Gracefully shutting down build container: qv7izn7luvfhwplhx2v7f5cx
+2026-Oct-29 02:59:40 [DEBUG] [CMD]: docker stop --timeout=30 'qv7izn7luvfhwplhx2v7f5cx'
+2026-Oct-29 02:59:40 [DEBUG] qv7izn7luvfhwplhx2v7f5cx

@@ -67,9 +67,9 @@ export const AbsurdityQuoteModal: React.FC<AbsurdityQuoteModalProps> = ({ isOpen
 
         <div className="flex items-center justify-between border-b border-[#00FF66]/20 pb-4">
           <div className="flex items-center gap-2">
-            <Bot className="w-6 h-6 text-[#00FF66] animate-bounce" />
+            <Sparkles className="w-6 h-6 text-[#00FF66] animate-spin" />
             <h3 className="font-mono font-bold text-lg text-white tracking-wider uppercase">
-              Случайный бред ИИ #00{currentIndex + 1}
+              Случайный вайб-перл #00{currentIndex + 1}
             </h3>
           </div>
           <button

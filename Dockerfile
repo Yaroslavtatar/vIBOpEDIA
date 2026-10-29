@@ -3,24 +3,36 @@
 # ==============================================================================
 # Multi-stage Dockerfile for Vibopedia (Coolify & Production Ready)
 # Features:
+# - Debian Bookworm Slim with Node.js 22 (LTS) for full glibc & native bindings compatibility
+# - Direct compatibility with glibc bindings (@rolldown/binding-linux-x64-gnu)
+# - Fully satisfies better-sqlite3 engine requirement (Node >= 22)
 # - Multi-stage caching for minimal image size and fast rebuilds
-# - Native C++ build support for better-sqlite3 on Alpine Linux
 # - Integrated build verification test stage (test:build)
 # - Secure non-root execution (user: node)
 # - Persistent SQLite volume storage (/app/data)
 # - Container healthcheck (/api/settings)
 # ==============================================================================
 
-# Stage 1: Base Alpine Environment
-FROM node:20-alpine AS base
+# Stage 1: Base Debian Slim Environment (glibc)
+FROM node:22-bookworm-slim AS base
 WORKDIR /app
+
 # Install system utilities needed for runtime and healthcheck
-RUN apk add --no-cache curl wget libc6-compat
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 # Stage 2: Dependencies & Native Build Tools
 FROM base AS dependencies
 # Install tools required to compile better-sqlite3 native bindings
-RUN apk add --no-cache python3 make g++ gcc linux-headers
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    gcc \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY package*.json ./
