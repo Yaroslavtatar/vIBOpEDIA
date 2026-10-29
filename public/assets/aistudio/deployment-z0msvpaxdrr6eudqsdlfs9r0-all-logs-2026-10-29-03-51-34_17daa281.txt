@@ -1,0 +1,422 @@
+2026-Oct-29 03:50:02 Docker 29.9.2 with BuildKit and Buildx detected on deployment server (localhost).
+2026-Oct-29 03:50:02 Starting deployment of Yaroslavtatar/vIBOpEDIA:main to localhost.
+2026-Oct-29 03:50:02 Preparing container with helper image: docker.io/coollabsio/coolify-helper:1.0.19
+2026-Oct-29 03:50:02 [DEBUG] [CMD]: docker stop --timeout=30 'z0msvpaxdrr6eudqsdlfs9r0'
+2026-Oct-29 03:50:02 [DEBUG] Error response from daemon: No such container: z0msvpaxdrr6eudqsdlfs9r0
+2026-Oct-29 03:50:03 [DEBUG] [CMD]: docker run -d --network 'coolify' --name z0msvpaxdrr6eudqsdlfs9r0  --rm -v /root/.docker/buildx:/root/.docker/buildx -v /var/run/docker.sock:/var/run/docker.sock  docker.io/coollabsio/coolify-helper:1.0.19
+2026-Oct-29 03:50:03 [DEBUG] ecb1d5bdea2bc0bdbd1f78887df444bba4457aefc0153b1aa62f8c52c7950eba
+2026-Oct-29 03:50:06 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'GIT_SSH_COMMAND="ssh -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -p 22 -o Port=22 -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git ls-remote '\''https://x-access-token:<REDACTED>@github.com/Yaroslavtatar/vIBOpEDIA.git'\'' '\''refs/heads/main'\'''
+2026-Oct-29 03:50:06 [DEBUG] 17619710c51dc46f694f24265306c02ef95f1263	refs/heads/main
+2026-Oct-29 03:50:06 ----------------------------------------
+2026-Oct-29 03:50:06 Importing Yaroslavtatar/vIBOpEDIA:main (commit sha 17619710c51dc46f694f24265306c02ef95f1263) to /artifacts/z0msvpaxdrr6eudqsdlfs9r0.
+2026-Oct-29 03:50:06 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' clone --depth=1 --recurse-submodules --shallow-submodules -b '\''main'\'' '\''https://x-access-token:<REDACTED>@github.com/Yaroslavtatar/vIBOpEDIA.git'\'' '\''/artifacts/z0msvpaxdrr6eudqsdlfs9r0'\'' && cd '\''/artifacts/z0msvpaxdrr6eudqsdlfs9r0'\'' && echo '\''Fetching the commit.'\'' && GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' fetch --depth=1 origin '\''17619710c51dc46f694f24265306c02ef95f1263'\'' && git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' -c advice.detachedHead=false checkout '\''17619710c51dc46f694f24265306c02ef95f1263'\'' >/dev/null 2>&1 && cd '\''/artifacts/z0msvpaxdrr6eudqsdlfs9r0'\'' && if [ -f .gitmodules ]; then echo '\''Updating submodules.'\'' && git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' submodule sync && GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' submodule update --init --recursive --depth=1; fi && cd '\''/artifacts/z0msvpaxdrr6eudqsdlfs9r0'\'' && if git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' lfs ls-files -n | grep -q .; then echo '\''Downloading Git LFS objects.'\'' && GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" git -c '\''url.https://x-access-token:<REDACTED>@github.com/.insteadOf=https://github.com/'\'' lfs pull; fi'
+2026-Oct-29 03:50:06 [DEBUG] Cloning into '/artifacts/z0msvpaxdrr6eudqsdlfs9r0'...
+2026-Oct-29 03:50:07 [DEBUG] Fetching the commit.
+2026-Oct-29 03:50:08 [DEBUG] From https://github.com/Yaroslavtatar/vIBOpEDIA
+2026-Oct-29 03:50:08 [DEBUG] * branch            17619710c51dc46f694f24265306c02ef95f1263 -> FETCH_HEAD
+2026-Oct-29 03:50:09 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'cd /artifacts/z0msvpaxdrr6eudqsdlfs9r0 && git log -1 '\''17619710c51dc46f694f24265306c02ef95f1263'\'' --pretty=%B'
+2026-Oct-29 03:50:09 [DEBUG] feat(auth): implement session management and security
+2026-Oct-29 03:50:09 [DEBUG] 
+2026-Oct-29 03:50:09 [DEBUG] Add cookie-based authentication, security headers, and CORS support. Update the database schema to support public registration toggling and password management.
+2026-Oct-29 03:50:09 Image not found (poil3oa03sh832fl82t0fqk2:17619710c51dc46f694f24265306c02ef95f1263). Building new image.
+2026-Oct-29 03:50:11 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'cat /artifacts/z0msvpaxdrr6eudqsdlfs9r0/Dockerfile'
+2026-Oct-29 03:50:11 [DEBUG] # syntax=docker/dockerfile:1
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # ==============================================================================
+2026-Oct-29 03:50:11 [DEBUG] # Multi-stage Dockerfile for Vibopedia (Coolify & Production Ready)
+2026-Oct-29 03:50:11 [DEBUG] # Features:
+2026-Oct-29 03:50:11 [DEBUG] # - Debian Bookworm Slim with Node.js 22 (LTS) for full glibc & native bindings compatibility
+2026-Oct-29 03:50:11 [DEBUG] # - Direct compatibility with glibc bindings (@rolldown/binding-linux-x64-gnu)
+2026-Oct-29 03:50:11 [DEBUG] # - Fully satisfies better-sqlite3 engine requirement (Node >= 22)
+2026-Oct-29 03:50:11 [DEBUG] # - Multi-stage caching for minimal image size and fast rebuilds
+2026-Oct-29 03:50:11 [DEBUG] # - Integrated build verification test stage (test:build)
+2026-Oct-29 03:50:11 [DEBUG] # - Secure non-root execution (user: node)
+2026-Oct-29 03:50:11 [DEBUG] # - Persistent SQLite volume storage (/app/data)
+2026-Oct-29 03:50:11 [DEBUG] # - Container healthcheck (/api/settings)
+2026-Oct-29 03:50:11 [DEBUG] # ==============================================================================
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 1: Base Debian Slim Environment (glibc)
+2026-Oct-29 03:50:11 [DEBUG] FROM node:22-bookworm-slim AS base
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Install system utilities needed for runtime and healthcheck
+2026-Oct-29 03:50:11 [DEBUG] RUN apt-get update && apt-get install -y --no-install-recommends \
+2026-Oct-29 03:50:11 [DEBUG] curl \
+2026-Oct-29 03:50:11 [DEBUG] wget \
+2026-Oct-29 03:50:11 [DEBUG] ca-certificates \
+2026-Oct-29 03:50:11 [DEBUG] && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 2: Dependencies & Native Build Tools
+2026-Oct-29 03:50:11 [DEBUG] FROM base AS dependencies
+2026-Oct-29 03:50:11 [DEBUG] # Install tools required to compile better-sqlite3 native bindings
+2026-Oct-29 03:50:11 [DEBUG] RUN apt-get update && apt-get install -y --no-install-recommends \
+2026-Oct-29 03:50:11 [DEBUG] python3 \
+2026-Oct-29 03:50:11 [DEBUG] make \
+2026-Oct-29 03:50:11 [DEBUG] g++ \
+2026-Oct-29 03:50:11 [DEBUG] gcc \
+2026-Oct-29 03:50:11 [DEBUG] && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] COPY package*.json ./
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Install all dependencies (including devDependencies needed for build & test)
+2026-Oct-29 03:50:11 [DEBUG] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 3: Testing & Validation
+2026-Oct-29 03:50:11 [DEBUG] FROM dependencies AS test
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] COPY . .
+2026-Oct-29 03:50:11 [DEBUG] # Run all build verification tests (TypeScript, Vite build, SQLite schema, Docker validation)
+2026-Oct-29 03:50:11 [DEBUG] RUN npm run test:build
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 4: Frontend Builder
+2026-Oct-29 03:50:11 [DEBUG] FROM dependencies AS builder
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] COPY . .
+2026-Oct-29 03:50:11 [DEBUG] # Compile Vite frontend assets to ./dist
+2026-Oct-29 03:50:11 [DEBUG] RUN npm run build
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 5: Production Runner
+2026-Oct-29 03:50:11 [DEBUG] FROM base AS runner
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] ENV NODE_ENV=production
+2026-Oct-29 03:50:11 [DEBUG] ENV PORT=3000
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Copy node_modules from dependencies stage (contains compiled better-sqlite3)
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=dependencies /app/node_modules ./node_modules
+2026-Oct-29 03:50:11 [DEBUG] # Copy compiled frontend dist from builder stage
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/dist ./dist
+2026-Oct-29 03:50:11 [DEBUG] # Copy backend application files and scripts
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/package*.json ./
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/server.ts ./server.ts
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/src ./src
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/tsconfig.json ./tsconfig.json
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/scripts ./scripts
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Prepare persistent data directory with proper ownership
+2026-Oct-29 03:50:11 [DEBUG] RUN mkdir -p /app/data && chown -R node:node /app
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # SQLite persistent data volume
+2026-Oct-29 03:50:11 [DEBUG] VOLUME ["/app/data"]
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Use standard non-root node user
+2026-Oct-29 03:50:11 [DEBUG] USER node
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] EXPOSE 3000
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Container healthcheck
+2026-Oct-29 03:50:11 [DEBUG] HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+2026-Oct-29 03:50:11 [DEBUG] CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/settings || exit 1
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Start Vibopedia production server
+2026-Oct-29 03:50:11 [DEBUG] CMD ["npm", "start"]
+2026-Oct-29 03:50:11 [DEBUG] Creating build-time .env file in /artifacts (outside Docker context).
+2026-Oct-29 03:50:11 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'cat /artifacts/z0msvpaxdrr6eudqsdlfs9r0/Dockerfile'
+2026-Oct-29 03:50:11 [DEBUG] # syntax=docker/dockerfile:1
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # ==============================================================================
+2026-Oct-29 03:50:11 [DEBUG] # Multi-stage Dockerfile for Vibopedia (Coolify & Production Ready)
+2026-Oct-29 03:50:11 [DEBUG] # Features:
+2026-Oct-29 03:50:11 [DEBUG] # - Debian Bookworm Slim with Node.js 22 (LTS) for full glibc & native bindings compatibility
+2026-Oct-29 03:50:11 [DEBUG] # - Direct compatibility with glibc bindings (@rolldown/binding-linux-x64-gnu)
+2026-Oct-29 03:50:11 [DEBUG] # - Fully satisfies better-sqlite3 engine requirement (Node >= 22)
+2026-Oct-29 03:50:11 [DEBUG] # - Multi-stage caching for minimal image size and fast rebuilds
+2026-Oct-29 03:50:11 [DEBUG] # - Integrated build verification test stage (test:build)
+2026-Oct-29 03:50:11 [DEBUG] # - Secure non-root execution (user: node)
+2026-Oct-29 03:50:11 [DEBUG] # - Persistent SQLite volume storage (/app/data)
+2026-Oct-29 03:50:11 [DEBUG] # - Container healthcheck (/api/settings)
+2026-Oct-29 03:50:11 [DEBUG] # ==============================================================================
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 1: Base Debian Slim Environment (glibc)
+2026-Oct-29 03:50:11 [DEBUG] FROM node:22-bookworm-slim AS base
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Install system utilities needed for runtime and healthcheck
+2026-Oct-29 03:50:11 [DEBUG] RUN apt-get update && apt-get install -y --no-install-recommends \
+2026-Oct-29 03:50:11 [DEBUG] curl \
+2026-Oct-29 03:50:11 [DEBUG] wget \
+2026-Oct-29 03:50:11 [DEBUG] ca-certificates \
+2026-Oct-29 03:50:11 [DEBUG] && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 2: Dependencies & Native Build Tools
+2026-Oct-29 03:50:11 [DEBUG] FROM base AS dependencies
+2026-Oct-29 03:50:11 [DEBUG] # Install tools required to compile better-sqlite3 native bindings
+2026-Oct-29 03:50:11 [DEBUG] RUN apt-get update && apt-get install -y --no-install-recommends \
+2026-Oct-29 03:50:11 [DEBUG] python3 \
+2026-Oct-29 03:50:11 [DEBUG] make \
+2026-Oct-29 03:50:11 [DEBUG] g++ \
+2026-Oct-29 03:50:11 [DEBUG] gcc \
+2026-Oct-29 03:50:11 [DEBUG] && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] COPY package*.json ./
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Install all dependencies (including devDependencies needed for build & test)
+2026-Oct-29 03:50:11 [DEBUG] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 3: Testing & Validation
+2026-Oct-29 03:50:11 [DEBUG] FROM dependencies AS test
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] COPY . .
+2026-Oct-29 03:50:11 [DEBUG] # Run all build verification tests (TypeScript, Vite build, SQLite schema, Docker validation)
+2026-Oct-29 03:50:11 [DEBUG] RUN npm run test:build
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 4: Frontend Builder
+2026-Oct-29 03:50:11 [DEBUG] FROM dependencies AS builder
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] COPY . .
+2026-Oct-29 03:50:11 [DEBUG] # Compile Vite frontend assets to ./dist
+2026-Oct-29 03:50:11 [DEBUG] RUN npm run build
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Stage 5: Production Runner
+2026-Oct-29 03:50:11 [DEBUG] FROM base AS runner
+2026-Oct-29 03:50:11 [DEBUG] WORKDIR /app
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] ENV NODE_ENV=production
+2026-Oct-29 03:50:11 [DEBUG] ENV PORT=3000
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Copy node_modules from dependencies stage (contains compiled better-sqlite3)
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=dependencies /app/node_modules ./node_modules
+2026-Oct-29 03:50:11 [DEBUG] # Copy compiled frontend dist from builder stage
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/dist ./dist
+2026-Oct-29 03:50:11 [DEBUG] # Copy backend application files and scripts
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/package*.json ./
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/server.ts ./server.ts
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/src ./src
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/tsconfig.json ./tsconfig.json
+2026-Oct-29 03:50:11 [DEBUG] COPY --from=builder /app/scripts ./scripts
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Prepare persistent data directory with proper ownership
+2026-Oct-29 03:50:11 [DEBUG] RUN mkdir -p /app/data && chown -R node:node /app
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # SQLite persistent data volume
+2026-Oct-29 03:50:11 [DEBUG] VOLUME ["/app/data"]
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Use standard non-root node user
+2026-Oct-29 03:50:11 [DEBUG] USER node
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] EXPOSE 3000
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Container healthcheck
+2026-Oct-29 03:50:11 [DEBUG] HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+2026-Oct-29 03:50:11 [DEBUG] CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/settings || exit 1
+2026-Oct-29 03:50:11 [DEBUG] 
+2026-Oct-29 03:50:11 [DEBUG] # Start Vibopedia production server
+2026-Oct-29 03:50:11 [DEBUG] CMD ["npm", "start"]
+2026-Oct-29 03:50:11 [DEBUG] Final Dockerfile:
+2026-Oct-29 03:50:12 ----------------------------------------
+2026-Oct-29 03:50:12 Building docker image started.
+2026-Oct-29 03:50:12 To check the current progress, click on Show Debug Logs.
+2026-Oct-29 03:50:12 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'cat /artifacts/build.sh'
+2026-Oct-29 03:50:12 [DEBUG] cd /artifacts/z0msvpaxdrr6eudqsdlfs9r0 && set -a && source /artifacts/build-time.env && set +a && DOCKER_BUILDKIT=1 docker build  --add-host coolify:10.0.1.18 --add-host coolify-db:10.0.1.15 --add-host coolify-redis:10.0.1.6 --add-host coolify-sentinel:10.0.1.2 --network host -f /artifacts/z0msvpaxdrr6eudqsdlfs9r0/Dockerfile --progress plain -t poil3oa03sh832fl82t0fqk2:17619710c51dc46f694f24265306c02ef95f1263 --build-arg 'COOLIFY_URL' --build-arg 'COOLIFY_FQDN' --build-arg 'COOLIFY_BRANCH' --build-arg 'COOLIFY_RESOURCE_UUID' --build-arg 'COOLIFY_BUILD_SECRETS_HASH=<REDACTED>' --build-arg 'COOLIFY_URL' --build-arg 'COOLIFY_FQDN' --build-arg 'COOLIFY_BRANCH' --build-arg 'COOLIFY_RESOURCE_UUID' /artifacts/z0msvpaxdrr6eudqsdlfs9r0
+2026-Oct-29 03:50:13 [DEBUG] [CMD]: docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'bash /artifacts/build.sh'
+2026-Oct-29 03:50:13 [DEBUG] #0 building with "default" instance using docker driver
+2026-Oct-29 03:50:13 [DEBUG] 
+2026-Oct-29 03:50:13 [DEBUG] #1 [internal] load build definition from Dockerfile
+2026-Oct-29 03:50:13 [DEBUG] #1 transferring dockerfile: 4.22kB done
+2026-Oct-29 03:50:13 [DEBUG] #1 DONE 0.1s
+2026-Oct-29 03:50:13 [DEBUG] #2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+2026-Oct-29 03:50:14 [DEBUG] #2 DONE 0.9s
+2026-Oct-29 03:50:14 [DEBUG] #3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+2026-Oct-29 03:50:14 [DEBUG] #3 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.1s done
+2026-Oct-29 03:50:14 [DEBUG] #3 CACHED
+2026-Oct-29 03:50:14 [DEBUG] #4 [internal] load metadata for docker.io/library/node:22-bookworm-slim
+2026-Oct-29 03:50:15 [DEBUG] #4 DONE 0.8s
+2026-Oct-29 03:50:15 [DEBUG] #5 [internal] load .dockerignore
+2026-Oct-29 03:50:15 [DEBUG] #5 transferring context: 234B done
+2026-Oct-29 03:50:15 [DEBUG] #5 DONE 0.1s
+2026-Oct-29 03:50:15 [DEBUG] #6 [internal] load build context
+2026-Oct-29 03:50:15 [DEBUG] #6 DONE 0.0s
+2026-Oct-29 03:50:15 [DEBUG] 
+2026-Oct-29 03:50:15 [DEBUG] #7 [base 1/3] FROM docker.io/library/node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da
+2026-Oct-29 03:50:15 [DEBUG] #7 resolve docker.io/library/node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da
+2026-Oct-29 03:50:16 [DEBUG] #7 resolve docker.io/library/node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da 0.2s done
+2026-Oct-29 03:50:16 [DEBUG] #7 DONE 0.2s
+2026-Oct-29 03:50:16 [DEBUG] 
+2026-Oct-29 03:50:16 [DEBUG] #6 [internal] load build context
+2026-Oct-29 03:50:16 [DEBUG] #6 transferring context: 1.32MB 0.0s done
+2026-Oct-29 03:50:16 [DEBUG] #6 DONE 0.3s
+2026-Oct-29 03:50:16 [DEBUG] 
+2026-Oct-29 03:50:16 [DEBUG] #8 [base 2/3] WORKDIR /app
+2026-Oct-29 03:50:16 [DEBUG] #8 CACHED
+2026-Oct-29 03:50:16 [DEBUG] 
+2026-Oct-29 03:50:16 [DEBUG] #9 [base 3/3] RUN apt-get update && apt-get install -y --no-install-recommends     curl     wget     ca-certificates   && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:16 [DEBUG] #9 CACHED
+2026-Oct-29 03:50:16 [DEBUG] 
+2026-Oct-29 03:50:16 [DEBUG] #10 [dependencies 1/4] RUN apt-get update && apt-get install -y --no-install-recommends     python3     make     g++     gcc   && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:16 [DEBUG] #10 CACHED
+2026-Oct-29 03:50:16 [DEBUG] 
+2026-Oct-29 03:50:16 [DEBUG] #11 [dependencies 2/4] WORKDIR /app
+2026-Oct-29 03:50:16 [DEBUG] #11 CACHED
+2026-Oct-29 03:50:16 [DEBUG] #12 [dependencies 3/4] COPY package*.json ./
+2026-Oct-29 03:50:16 [DEBUG] #12 DONE 0.4s
+2026-Oct-29 03:50:16 [DEBUG] #13 [dependencies 4/4] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error code EUSAGE
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Missing: @types/cookie-parser@1.4.10 from lock file
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Missing: cookie-parser@1.4.7 from lock file
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Missing: cookie-signature@1.0.6 from lock file
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Clean install a project
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Usage:
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error npm ci
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Options:
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [--no-bin-links] [--no-fund] [--dry-run]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error
+2026-Oct-29 03:50:18 [DEBUG] #13 1.910 npm error Run "npm help ci" for more info
+2026-Oct-29 03:50:18 [DEBUG] #13 1.916 npm notice
+2026-Oct-29 03:50:18 [DEBUG] #13 1.916 npm notice New major version of npm available! 10.9.9 -> 12.2.1
+2026-Oct-29 03:50:18 [DEBUG] #13 1.916 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+2026-Oct-29 03:50:18 [DEBUG] #13 1.916 npm notice To update run: npm install -g npm@12.2.1
+2026-Oct-29 03:50:18 [DEBUG] #13 1.916 npm notice
+2026-Oct-29 03:50:18 [DEBUG] #13 1.917 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-10-29T03_50_17_327Z-debug-0.log
+2026-Oct-29 03:50:18 [DEBUG] #13 ERROR: process "/bin/sh -c if [ -f package-lock.json ]; then npm ci; else npm install; fi" did not complete successfully: exit code: 1
+2026-Oct-29 03:50:19 [DEBUG] ------
+2026-Oct-29 03:50:19 [DEBUG] > [dependencies 4/4] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi:
+2026-Oct-29 03:50:19 [DEBUG] 1.910 npm error
+2026-Oct-29 03:50:19 [DEBUG] 1.910 npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-Oct-29 03:50:19 [DEBUG] 1.910 npm error
+2026-Oct-29 03:50:19 [DEBUG] 1.910 npm error Run "npm help ci" for more info
+2026-Oct-29 03:50:19 [DEBUG] 1.916 npm notice
+2026-Oct-29 03:50:19 [DEBUG] 1.916 npm notice New major version of npm available! 10.9.9 -> 12.2.1
+2026-Oct-29 03:50:19 [DEBUG] 1.916 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+2026-Oct-29 03:50:19 [DEBUG] 1.916 npm notice To update run: npm install -g npm@12.2.1
+2026-Oct-29 03:50:19 [DEBUG] 1.916 npm notice
+2026-Oct-29 03:50:19 [DEBUG] 1.917 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-10-29T03_50_17_327Z-debug-0.log
+2026-Oct-29 03:50:19 [DEBUG] ------
+2026-Oct-29 03:50:19 [DEBUG] Dockerfile:51
+2026-Oct-29 03:50:19 [DEBUG] --------------------
+2026-Oct-29 03:50:19 [DEBUG] 49 |
+2026-Oct-29 03:50:19 [DEBUG] 50 |     # Install all dependencies (including devDependencies needed for build & test)
+2026-Oct-29 03:50:19 [DEBUG] 51 | >>> RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 03:50:19 [DEBUG] 52 |
+2026-Oct-29 03:50:19 [DEBUG] 53 |     # Stage 3: Testing & Validation
+2026-Oct-29 03:50:19 [DEBUG] --------------------
+2026-Oct-29 03:50:19 [DEBUG] ERROR: failed to build: failed to solve: process "/bin/sh -c if [ -f package-lock.json ]; then npm ci; else npm install; fi" did not complete successfully: exit code: 1
+2026-Oct-29 03:50:19 ========================================
+2026-Oct-29 03:50:19 Deployment failed: Command execution failed (exit code 1): docker exec z0msvpaxdrr6eudqsdlfs9r0 bash -c 'bash /artifacts/build.sh'
+2026-Oct-29 03:50:19 Error: #0 building with "default" instance using docker driver
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #1 [internal] load build definition from Dockerfile
+2026-Oct-29 03:50:19 #1 transferring dockerfile: 4.22kB done
+2026-Oct-29 03:50:19 #1 DONE 0.1s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+2026-Oct-29 03:50:19 #2 DONE 0.9s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+2026-Oct-29 03:50:19 #3 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.1s done
+2026-Oct-29 03:50:19 #3 CACHED
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #4 [internal] load metadata for docker.io/library/node:22-bookworm-slim
+2026-Oct-29 03:50:19 #4 DONE 0.8s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #5 [internal] load .dockerignore
+2026-Oct-29 03:50:19 #5 transferring context: 234B done
+2026-Oct-29 03:50:19 #5 DONE 0.1s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #6 [internal] load build context
+2026-Oct-29 03:50:19 #6 DONE 0.0s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #7 [base 1/3] FROM docker.io/library/node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da
+2026-Oct-29 03:50:19 #7 resolve docker.io/library/node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da
+2026-Oct-29 03:50:19 #7 resolve docker.io/library/node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da 0.2s done
+2026-Oct-29 03:50:19 #7 DONE 0.2s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #6 [internal] load build context
+2026-Oct-29 03:50:19 #6 transferring context: 1.32MB 0.0s done
+2026-Oct-29 03:50:19 #6 DONE 0.3s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #8 [base 2/3] WORKDIR /app
+2026-Oct-29 03:50:19 #8 CACHED
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #9 [base 3/3] RUN apt-get update && apt-get install -y --no-install-recommends     curl     wget     ca-certificates   && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:19 #9 CACHED
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #10 [dependencies 1/4] RUN apt-get update && apt-get install -y --no-install-recommends     python3     make     g++     gcc   && rm -rf /var/lib/apt/lists/*
+2026-Oct-29 03:50:19 #10 CACHED
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #11 [dependencies 2/4] WORKDIR /app
+2026-Oct-29 03:50:19 #11 CACHED
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #12 [dependencies 3/4] COPY package*.json ./
+2026-Oct-29 03:50:19 #12 DONE 0.4s
+2026-Oct-29 03:50:19 
+2026-Oct-29 03:50:19 #13 [dependencies 4/4] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 03:50:19 #13 1.910 npm error code EUSAGE
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error Missing: @types/cookie-parser@1.4.10 from lock file
+2026-Oct-29 03:50:19 #13 1.910 npm error Missing: cookie-parser@1.4.7 from lock file
+2026-Oct-29 03:50:19 #13 1.910 npm error Missing: cookie-signature@1.0.6 from lock file
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error Clean install a project
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error Usage:
+2026-Oct-29 03:50:19 #13 1.910 npm error npm ci
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error Options:
+2026-Oct-29 03:50:19 #13 1.910 npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+2026-Oct-29 03:50:19 #13 1.910 npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+2026-Oct-29 03:50:19 #13 1.910 npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+2026-Oct-29 03:50:19 #13 1.910 npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+2026-Oct-29 03:50:19 #13 1.910 npm error [--no-bin-links] [--no-fund] [--dry-run]
+2026-Oct-29 03:50:19 #13 1.910 npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+2026-Oct-29 03:50:19 #13 1.910 npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-Oct-29 03:50:19 #13 1.910 npm error
+2026-Oct-29 03:50:19 #13 1.910 npm error Run "npm help ci" for more info
+2026-Oct-29 03:50:19 #13 1.916 npm notice
+2026-Oct-29 03:50:19 #13 1.916 npm notice New major version of npm available! 10.9.9 -> 12.2.1
+2026-Oct-29 03:50:19 #13 1.916 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+2026-Oct-29 03:50:19 #13 1.916 npm notice To update run: npm install -g npm@12.2.1
+2026-Oct-29 03:50:19 #13 1.916 npm notice
+2026-Oct-29 03:50:19 #13 1.917 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-10-29T03_50_17_327Z-debug-0.log
+2026-Oct-29 03:50:19 #13 ERROR: process "/bin/sh -c if [ -f package-lock.json ]; then npm ci; else npm install; fi" did not complete successfully: exit code: 1
+2026-Oct-29 03:50:19 ------
+2026-Oct-29 03:50:19 > [dependencies 4/4] RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi:
+2026-Oct-29 03:50:19 1.910 npm error
+2026-Oct-29 03:50:19 1.910 npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-Oct-29 03:50:19 1.910 npm error
+2026-Oct-29 03:50:19 1.910 npm error Run "npm help ci" for more info
+2026-Oct-29 03:50:19 1.916 npm notice
+2026-Oct-29 03:50:19 1.916 npm notice New major version of npm available! 10.9.9 -> 12.2.1
+2026-Oct-29 03:50:19 1.916 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+2026-Oct-29 03:50:19 1.916 npm notice To update run: npm install -g npm@12.2.1
+2026-Oct-29 03:50:19 1.916 npm notice
+2026-Oct-29 03:50:19 1.917 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-10-29T03_50_17_327Z-debug-0.log
+2026-Oct-29 03:50:19 ------
+2026-Oct-29 03:50:19 Dockerfile:51
+2026-Oct-29 03:50:19 --------------------
+2026-Oct-29 03:50:19 49 |
+2026-Oct-29 03:50:19 50 |     # Install all dependencies (including devDependencies needed for build & test)
+2026-Oct-29 03:50:19 51 | >>> RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-Oct-29 03:50:19 52 |
+2026-Oct-29 03:50:19 53 |     # Stage 3: Testing & Validation
+2026-Oct-29 03:50:19 --------------------
+2026-Oct-29 03:50:19 ERROR: failed to build: failed to solve: process "/bin/sh -c if [ -f package-lock.json ]; then npm ci; else npm install; fi" did not complete successfully: exit code: 1
+2026-Oct-29 03:50:19 [DEBUG] Error type: App\Exceptions\DeploymentException
+2026-Oct-29 03:50:19 [DEBUG] Error code: 1
+2026-Oct-29 03:50:19 [DEBUG] Location: /var/www/html/app/Traits/ExecuteRemoteCommand.php:231
+2026-Oct-29 03:50:19 ========================================
+2026-Oct-29 03:50:19 Deployment failed. Removing the new version of your application.
+2026-Oct-29 03:50:19 [DEBUG] [CMD]: bash -c 'if command -v timeout >/dev/null 2>&1; then output=$(timeout -k 10s 60s docker rm -f '\''poil3oa03sh832fl82t0fqk2-20261029T034959'\'' 2>&1); exit_code=$?; else output='\'''\''; exit_code=124; fi; if [ "$exit_code" -eq 124 ]; then echo '\''__COOLIFY_CONTAINER_REMOVE_TIMEOUT__'\''; elif [ "$exit_code" -ne 0 ] && printf '\''%s'\'' "$output" | grep -q '\''No such container:'\''; then exit 0; elif [ "$exit_code" -ne 0 ]; then printf '\''%s\n'\'' "$output" >&2; else printf '\''%s\n'\'' "$output"; fi; exit $exit_code'
+2026-Oct-29 03:50:19 [DEBUG] 
+2026-Oct-29 03:50:20 Gracefully shutting down build container: z0msvpaxdrr6eudqsdlfs9r0
+2026-Oct-29 03:50:20 [DEBUG] [CMD]: docker stop --timeout=30 'z0msvpaxdrr6eudqsdlfs9r0'
+2026-Oct-29 03:50:20 [DEBUG] z0msvpaxdrr6eudqsdlfs9r0

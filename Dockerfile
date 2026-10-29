@@ -37,8 +37,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies needed for build & test)
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# Install all dependencies (fallback to npm install if npm ci encounters any lockfile discrepancies)
+RUN if [ -f package-lock.json ]; then npm ci || npm install; else npm install; fi
 
 # Stage 3: Testing & Validation
 FROM dependencies AS test
