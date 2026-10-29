@@ -22,7 +22,9 @@ import {
   Users,
   Keyboard,
   Github,
-  Send
+  Send,
+  Lightbulb,
+  Clock
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -314,6 +316,28 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     <Bookmark className="w-4 h-4 text-amber-500" />
                     <span>Закладки</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onNavigate('/review');
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                  >
+                    <Clock className="w-4 h-4 text-amber-500" />
+                    <span>На рассмотрении</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onNavigate('/ideas');
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                  >
+                    <Lightbulb className="w-4 h-4 text-amber-500" />
+                    <span>Идеи и предложения</span>
                   </button>
 
                   {hasRole(['admin', 'moderator']) && (

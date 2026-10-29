@@ -7,7 +7,9 @@ import {
   Report,
   Notification,
   AuditLog,
-  SiteSettings
+  SiteSettings,
+  Idea,
+  UploadResponse
 } from '../types/index.js';
 
 const API_BASE = '/api';
@@ -229,5 +231,50 @@ export const api = {
     request<{ result: string }>('/gemini/assist', {
       method: 'POST',
       body: JSON.stringify({ task, title, content })
+    }),
+
+  // Upload Image
+  uploadImage: (image: string, fileName?: string) =>
+    request<UploadResponse>('/upload', {
+      method: 'POST',
+      body: JSON.stringify({ image, fileName })
+    }),
+
+  // Pending Articles & Review Operations
+  getPendingArticles: () => request<{ articles: Article[] }>('/articles/pending'),
+  retractArticle: (id: string) =>
+    request<{ success: boolean; article: Article }>(`/articles/${id}/retract`, {
+      method: 'POST'
+    }),
+  reviewArticle: (id: string, status: 'published' | 'rejected' | 'needs_revision', feedback?: string) =>
+    request<{ success: boolean; article: Article }>(`/articles/${id}/review`, {
+      method: 'POST',
+      body: JSON.stringify({ status, feedback })
+    }),
+  deleteArticle: (id: string) =>
+    request<{ success: boolean }>(`/articles/${id}`, {
+      method: 'DELETE'
+    }),
+
+  // Ideas & Proposals
+  getIdeas: () => request<{ ideas: Idea[] }>('/ideas'),
+  createIdea: (data: { title: string; description: string; category: string }) =>
+    request<{ idea: Idea }>('/ideas', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  voteIdea: (id: string, voteType: number) =>
+    request<{ score: number; userVote: number }>(`/ideas/${id}/vote`, {
+      method: 'POST',
+      body: JSON.stringify({ voteType })
+    }),
+  updateIdeaStatus: (id: string, status?: string, adminResponse?: string) =>
+    request<{ success: boolean; idea: Idea }>(`/ideas/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, adminResponse })
+    }),
+  deleteIdea: (id: string) =>
+    request<{ success: boolean }>(`/ideas/${id}`, {
+      method: 'DELETE'
     })
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext.js';
+import { NotificationProvider } from './context/NotificationContext.js';
 import { Header } from './components/Header.js';
 import { Footer } from './components/Footer.js';
 import { SearchModal } from './components/SearchModal.js';
@@ -20,6 +21,8 @@ import { AdminPage } from './pages/AdminPage.js';
 import { UserProfilePage } from './pages/UserProfilePage.js';
 import { BookmarksPage } from './pages/BookmarksPage.js';
 import { NotificationsPage } from './pages/NotificationsPage.js';
+import { PendingReviewPage } from './pages/PendingReviewPage.js';
+import { IdeasPage } from './pages/IdeasPage.js';
 import { StaticInfoPage } from './pages/StaticInfoPages.js';
 import { DevelopersPage } from './pages/DevelopersPage.js';
 import { motion, AnimatePresence } from 'motion/react';
@@ -63,16 +66,24 @@ export default function App() {
         return;
       }
 
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      const isMeta = e.ctrlKey || e.metaKey;
+
+      if (isMeta && (e.code === 'KeyK' || e.key.toLowerCase() === 'k')) {
         e.preventDefault();
         setSearchOpen((prev) => !prev);
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
+      } else if (isMeta && (e.code === 'KeyN' || e.key.toLowerCase() === 'n')) {
         e.preventDefault();
         navigate('/articles/new');
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
+      } else if (isMeta && (e.code === 'KeyH' || e.key.toLowerCase() === 'h')) {
         e.preventDefault();
         navigate('/');
-      } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'r') {
+      } else if (isMeta && (e.code === 'KeyI' || e.key.toLowerCase() === 'i')) {
+        e.preventDefault();
+        navigate('/ideas');
+      } else if (isMeta && (e.code === 'KeyP' || e.key.toLowerCase() === 'p')) {
+        e.preventDefault();
+        navigate('/review');
+      } else if (isMeta && e.shiftKey && (e.code === 'KeyR' || e.key.toLowerCase() === 'r')) {
         e.preventDefault();
         try {
           const res = await api.getRandomArticleSlug();
@@ -80,7 +91,11 @@ export default function App() {
         } catch {
           navigate('/articles');
         }
-      } else if (e.key === '?') {
+      } else if (e.code === 'Escape' || e.key === 'Escape') {
+        e.preventDefault();
+        setSearchOpen(false);
+        setShortcutsOpen(false);
+      } else if (e.key === '?' || e.code === 'Slash') {
         e.preventDefault();
         setShortcutsOpen((prev) => !prev);
       }
@@ -174,6 +189,14 @@ export default function App() {
       return <NotificationsPage onNavigate={navigate} />;
     }
 
+    if (path === '/review') {
+      return <PendingReviewPage onNavigate={navigate} />;
+    }
+
+    if (path === '/ideas') {
+      return <IdeasPage onNavigate={navigate} />;
+    }
+
     if (path === '/about') {
       return <StaticInfoPage type="about" />;
     }
@@ -197,47 +220,49 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-[#f8f9fa] dark:bg-slate-950 text-[#202122] dark:text-slate-100 font-sans selection:bg-blue-200 dark:selection:bg-blue-900">
-        <Header
-          onOpenSearch={() => setSearchOpen(true)}
-          onNavigate={navigate}
-          onOpenAuth={() => setAuthOpen(true)}
-          onOpenShortcuts={() => setShortcutsOpen(true)}
-          currentPath={currentPath}
-        />
+      <NotificationProvider>
+        <div className="min-h-screen flex flex-col bg-[#f8f9fa] dark:bg-slate-950 text-[#202122] dark:text-slate-100 font-sans selection:bg-blue-200 dark:selection:bg-blue-900">
+          <Header
+            onOpenSearch={() => setSearchOpen(true)}
+            onNavigate={navigate}
+            onOpenAuth={() => setAuthOpen(true)}
+            onOpenShortcuts={() => setShortcutsOpen(true)}
+            currentPath={currentPath}
+          />
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPath}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-              {renderRoute()}
-            </motion.div>
-          </AnimatePresence>
-        </main>
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPath}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                {renderRoute()}
+              </motion.div>
+            </AnimatePresence>
+          </main>
 
-        <Footer onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} />
+          <Footer onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} />
 
-        <SearchModal
-          isOpen={searchOpen}
-          onClose={() => setSearchOpen(false)}
-          onNavigate={navigate}
-        />
+          <SearchModal
+            isOpen={searchOpen}
+            onClose={() => setSearchOpen(false)}
+            onNavigate={navigate}
+          />
 
-        <AuthModal
-          isOpen={authOpen}
-          onClose={() => setAuthOpen(false)}
-        />
+          <AuthModal
+            isOpen={authOpen}
+            onClose={() => setAuthOpen(false)}
+          />
 
-        <KeyboardShortcutsModal
-          isOpen={shortcutsOpen}
-          onClose={() => setShortcutsOpen(false)}
-        />
-      </div>
+          <KeyboardShortcutsModal
+            isOpen={shortcutsOpen}
+            onClose={() => setShortcutsOpen(false)}
+          />
+        </div>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

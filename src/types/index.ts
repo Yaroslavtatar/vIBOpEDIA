@@ -139,10 +139,35 @@ export interface Notification {
   userId: string;
   title: string;
   message: string;
-  type: 'article_approved' | 'article_rejected' | 'comment_reply' | 'system' | 'role_change';
+  type: 'article_approved' | 'article_rejected' | 'article_pending' | 'article_retracted' | 'comment_reply' | 'system' | 'role_change' | 'idea_status' | 'idea_response';
   linkUrl?: string;
   isRead: boolean;
   createdAt: string;
+}
+
+export type IdeaStatus = 'open' | 'planned' | 'in_progress' | 'implemented' | 'rejected';
+export type IdeaCategory = 'interface' | 'features' | 'sections' | 'rules' | 'other';
+
+export interface Idea {
+  id: string;
+  title: string;
+  description: string;
+  category: IdeaCategory;
+  status: IdeaStatus;
+  authorId: string;
+  authorUsername: string;
+  authorDisplayName: string;
+  authorAvatar?: string;
+  score: number;
+  userVote?: number; // +1, -1, or 0
+  adminResponse?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UploadResponse {
+  url: string;
+  fileName: string;
 }
 
 export interface AuditLog {
@@ -167,3 +192,4 @@ export interface SiteSettings {
   githubUrl?: string;
   telegramUrl?: string;
 }
+

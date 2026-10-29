@@ -10,8 +10,10 @@ const SHORTCUTS = [
   { key: 'Ctrl + K', description: 'Открыть быстрый поиск по энциклопедии' },
   { key: 'Ctrl + N', description: 'Перейти к созданию новой статьи' },
   { key: 'Ctrl + H', description: 'Перейти на Заглавную страницу' },
+  { key: 'Ctrl + I', description: 'Открыть Банк Идей и Предложений' },
+  { key: 'Ctrl + P', description: 'Открыть Статьи На Рассмотрении' },
   { key: 'Ctrl + Shift + R', description: 'Открыть случайную статью' },
-  { key: 'Esc', description: 'Закрыть модальное окно или меню' },
+  { key: 'Esc', description: 'Закрыть окно или поиск' },
   { key: '?', description: 'Показать справку по горячим клавишам' },
 ];
 

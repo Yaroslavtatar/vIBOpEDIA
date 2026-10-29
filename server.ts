@@ -13,6 +13,9 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 
+// Serve Uploaded Files
+app.use('/uploads', express.static(path.resolve('./uploads')));
+
 // CORS & Production Security Headers
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
@@ -1101,6 +1104,443 @@ app.post('/api/gemini/assist', async (req: Request, res: Response) => {
     console.error('Gemini API Error:', err);
     res.status(500).json({ error: 'Ошибка генерации ответа ИИ' });
   }
+});
+
+// --- REAL-TIME SERVER-SENT EVENTS (SSE) SYSTEM ---
+interface SSEClient {
+  id: string;
+  userId?: string;
+  res: Response;
+}
+const sseClients = new Map<string, SSEClient>();
+
+function broadcastSSE(event: string, data: any, targetUserId?: string) {
+  const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  for (const client of sseClients.values()) {
+    if (!targetUserId || client.userId === targetUserId) {
+      try {
+        client.res.write(payload);
+      } catch (err) {
+        // ignore broken client socket
+      }
+    }
+  }
+}
+
+app.get('/api/events', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  const clientId = 'sse-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  res.write(`event: connected\ndata: ${JSON.stringify({ clientId, userId: user?.id || null })}\n\n`);
+
+  sseClients.set(clientId, { id: clientId, userId: user?.id, res });
+
+  const keepAliveInterval = setInterval(() => {
+    try {
+      res.write(': keep-alive\n\n');
+    } catch {
+      clearInterval(keepAliveInterval);
+    }
+  }, 20000);
+
+  req.on('close', () => {
+    clearInterval(keepAliveInterval);
+    sseClients.delete(clientId);
+  });
+});
+
+// --- IMAGE FILE UPLOAD ENDPOINT ---
+app.post('/api/upload', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Авторизуйтесь для загрузки медиафайлов.' });
+  }
+
+  const { image, fileName } = req.body;
+  if (!image) {
+    return res.status(400).json({ error: 'Файл изображения не передан.' });
+  }
+
+  try {
+    let base64Data = image;
+    let mimeType = 'image/png';
+    let ext = 'png';
+
+    const match = image.match(/^data:(image\/[a-zA-Z0-9\+\-\.]+);base64,(.+)$/);
+    if (match) {
+      mimeType = match[1];
+      base64Data = match[2];
+
+      if (mimeType === 'image/jpeg' || mimeType === 'image/jpg') ext = 'jpg';
+      else if (mimeType === 'image/png') ext = 'png';
+      else if (mimeType === 'image/webp') ext = 'webp';
+      else if (mimeType === 'image/gif') ext = 'gif';
+      else if (mimeType === 'image/svg+xml') ext = 'svg';
+      else {
+        return res.status(400).json({ error: 'Поддерживаются только форматы PNG, JPG, WEBP, GIF и SVG.' });
+      }
+    }
+
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // Limit size to 10MB
+    if (buffer.length > 10 * 1024 * 1024) {
+      return res.status(400).json({ error: 'Размер файла превышает допустимый лимит 10 МБ.' });
+    }
+
+    const safeName = (fileName || 'image')
+      .toLowerCase()
+      .replace(/[^\w\u0400-\u04FF\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+
+    const generatedFileName = `img-${Date.now()}-${Math.random().toString(36).substring(2, 6)}-${safeName || 'upload'}.${ext}`;
+    const uploadPath = path.resolve('./uploads', generatedFileName);
+
+    fs.writeFileSync(uploadPath, buffer);
+
+    const fileUrl = `/uploads/${generatedFileName}`;
+    res.json({ url: fileUrl, fileName: generatedFileName });
+  } catch (err: any) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'Ошибка сохранения изображения на сервере.' });
+  }
+});
+
+// --- ARTICLES UNDER REVIEW & MODERATION EXTENSIONS ---
+app.get('/api/articles/pending', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Требуется авторизация.' });
+
+  const isModOrAdmin = user.role === 'admin' || user.role === 'moderator';
+  const allArticles = dbService.getDb().articles;
+
+  const pendingList = allArticles.filter((a) => {
+    if (isModOrAdmin) {
+      return a.status === 'pending' || a.status === 'needs_revision' || a.status === 'rejected';
+    }
+    // Author sees their own pending/needs_revision/rejected/draft articles
+    return a.authorId === user.id && (a.status === 'pending' || a.status === 'needs_revision' || a.status === 'rejected' || a.status === 'draft');
+  });
+
+  res.json({ articles: pendingList });
+});
+
+// Retract article back to draft
+app.post('/api/articles/:id/retract', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Требуется авторизация.' });
+
+  const { id } = req.params;
+  const article = dbService.getArticleById(id);
+  if (!article) return res.status(404).json({ error: 'Статья не найдена.' });
+
+  if (article.authorId !== user.id && user.role !== 'admin') {
+    return res.status(403).json({ error: 'У вас нет прав для забора этой статьи.' });
+  }
+
+  let updatedArt: Article | null = null;
+  dbService.updateDb((db) => {
+    const art = db.articles.find((a) => a.id === id);
+    if (art) {
+      art.status = 'draft';
+      art.updatedAt = new Date().toISOString();
+      updatedArt = art;
+
+      db.notifications.push({
+        id: 'notif-' + Date.now(),
+        userId: user.id,
+        title: 'Статья отозвана на доработку',
+        message: `Вы забрали статью "${art.title}" на редактирование. Ей присвоен статус черновика.`,
+        type: 'article_retracted',
+        linkUrl: `/articles/${art.slug}/edit`,
+        isRead: false,
+        createdAt: new Date().toISOString()
+      });
+    }
+  });
+
+  broadcastSSE('article_retracted', { articleId: id, authorId: user.id });
+
+  res.json({ success: true, article: updatedArt });
+});
+
+// Detailed Article Review (Approve / Reject with feedback / Request Changes)
+app.post('/api/articles/:id/review', requireRole(['admin', 'moderator']), (req: Request, res: Response) => {
+  const reviewer = (req as any).user as User;
+  const { id } = req.params;
+  const { status, feedback } = req.body; // status: 'published' | 'rejected' | 'needs_revision'
+
+  const article = dbService.getArticleById(id);
+  if (!article) return res.status(404).json({ error: 'Статья не найдена.' });
+
+  if (!['published', 'rejected', 'needs_revision'].includes(status)) {
+    return res.status(400).json({ error: 'Неверный статус проверки.' });
+  }
+
+  let updatedArt: Article | null = null;
+
+  dbService.updateDb((db) => {
+    const art = db.articles.find((a) => a.id === id);
+    if (!art) return;
+
+    art.status = status;
+    art.updatedAt = new Date().toISOString();
+    (art as any).reviewFeedback = feedback || null;
+    (art as any).reviewedBy = reviewer.displayName;
+    (art as any).reviewedAt = new Date().toISOString();
+    updatedArt = art;
+
+    let notifTitle = '';
+    let notifMessage = '';
+    let notifType: any = 'system';
+
+    if (status === 'published') {
+      notifTitle = 'Ваша статья успешно опубликована! 🎉';
+      notifMessage = `Модератор ${reviewer.displayName} одобрил вашу статью "${art.title}".`;
+      notifType = 'article_approved';
+    } else if (status === 'rejected') {
+      notifTitle = 'Статья отклонена модерацией ❌';
+      notifMessage = `Статья "${art.title}" отклонена. Причина: ${feedback || 'Не соответствует правилам'}`;
+      notifType = 'article_rejected';
+    } else if (status === 'needs_revision') {
+      notifTitle = 'Требуются правки в статье ✏️';
+      notifMessage = `Модератор запросил изменения статьи "${art.title}". Замечания: ${feedback || 'Пожалуйста, проверьте факты и оформление'}`;
+      notifType = 'article_pending';
+    }
+
+    db.notifications.push({
+      id: 'notif-' + Date.now(),
+      userId: art.authorId,
+      title: notifTitle,
+      message: notifMessage,
+      type: notifType,
+      linkUrl: status === 'published' ? `/articles/${art.slug}` : `/review`,
+      isRead: false,
+      createdAt: new Date().toISOString()
+    });
+  });
+
+  dbService.logAudit(reviewer, `REVIEW_ARTICLE_${status.toUpperCase()}`, 'article', id, feedback || status);
+
+  // Broadcast real-time SSE notification to the author
+  broadcastSSE('article_reviewed', {
+    articleId: id,
+    title: article.title,
+    status,
+    feedback,
+    reviewer: reviewer.displayName,
+    authorId: article.authorId
+  }, article.authorId);
+
+  res.json({ success: true, article: updatedArt });
+});
+
+// Delete Article Endpoint (for author or admin)
+app.delete('/api/articles/:id', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Требуется авторизация.' });
+
+  const { id } = req.params;
+  const article = dbService.getArticleById(id);
+  if (!article) return res.status(404).json({ error: 'Статья не найдена.' });
+
+  if (article.authorId !== user.id && user.role !== 'admin') {
+    return res.status(403).json({ error: 'У вас нет прав для удаления этой статьи.' });
+  }
+
+  dbService.updateDb((db) => {
+    db.articles = db.articles.filter((a) => a.id !== id);
+    db.revisions = db.revisions.filter((r) => r.articleId !== id);
+    db.comments = db.comments.filter((c) => c.articleId !== id);
+    delete db.likesMap[id];
+  });
+
+  dbService.logAudit(user, 'DELETE_ARTICLE', 'article', id, `Статья "${article.title}" удалена`);
+
+  broadcastSSE('article_deleted', { articleId: id });
+
+  res.json({ success: true });
+});
+
+// --- IDEAS & PROPOSALS API ROUTES ---
+app.get('/api/ideas', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  const db = dbService.getDb();
+
+  const userVotesMap = new Map<string, number>();
+  if (user) {
+    db.ideaVotes.filter((v) => v.userId === user.id).forEach((v) => userVotesMap.set(v.ideaId, v.voteType));
+  }
+
+  const ideasList = db.ideas.map((idea) => ({
+    ...idea,
+    userVote: userVotesMap.get(idea.id) || 0
+  })).sort((a, b) => b.score - a.score || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  res.json({ ideas: ideasList });
+});
+
+app.post('/api/ideas', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Авторизуйтесь для создания идеи.' });
+
+  const { title, description, category } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({ error: 'Заполните название и описание идеи.' });
+  }
+
+  const newIdea = {
+    id: 'idea-' + Date.now(),
+    title: title.trim(),
+    description: description.trim(),
+    category: category || 'features',
+    status: 'open' as const,
+    authorId: user.id,
+    authorUsername: user.username,
+    authorDisplayName: user.displayName,
+    authorAvatar: user.avatarUrl,
+    score: 1, // Author automatically upvotes their own proposal
+    adminResponse: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  dbService.updateDb((db) => {
+    db.ideas.push(newIdea);
+    db.ideaVotes.push({
+      ideaId: newIdea.id,
+      userId: user.id,
+      voteType: 1,
+      createdAt: new Date().toISOString()
+    });
+  });
+
+  dbService.logAudit(user, 'CREATE_IDEA', 'idea', newIdea.id, `Предложена идея: "${newIdea.title}"`);
+
+  broadcastSSE('new_idea', { idea: newIdea });
+
+  res.json({ idea: newIdea });
+});
+
+app.post('/api/ideas/:id/vote', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Авторизуйтесь для голосования.' });
+
+  const { id } = req.params;
+  const { voteType } = req.body; // +1 or -1
+
+  if (voteType !== 1 && voteType !== -1) {
+    return res.status(400).json({ error: 'Неверный тип голоса.' });
+  }
+
+  let newScore = 0;
+  let currentUserVote = 0;
+
+  dbService.updateDb((db) => {
+    const idea = db.ideas.find((i) => i.id === id);
+    if (!idea) return;
+
+    const existingIndex = db.ideaVotes.findIndex((v) => v.ideaId === id && v.userId === user.id);
+
+    if (existingIndex >= 0) {
+      const prev = db.ideaVotes[existingIndex];
+      if (prev.voteType === voteType) {
+        // Toggle off vote
+        db.ideaVotes.splice(existingIndex, 1);
+        idea.score -= voteType;
+        currentUserVote = 0;
+      } else {
+        // Change vote from +1 to -1 or vice versa
+        idea.score += voteType - prev.voteType;
+        prev.voteType = voteType;
+        currentUserVote = voteType;
+      }
+    } else {
+      // New vote
+      db.ideaVotes.push({
+        ideaId: id,
+        userId: user.id,
+        voteType,
+        createdAt: new Date().toISOString()
+      });
+      idea.score += voteType;
+      currentUserVote = voteType;
+    }
+
+    idea.updatedAt = new Date().toISOString();
+    newScore = idea.score;
+  });
+
+  broadcastSSE('idea_voted', { ideaId: id, score: newScore });
+
+  res.json({ score: newScore, userVote: currentUserVote });
+});
+
+// Update idea status or admin response
+app.patch('/api/ideas/:id/status', requireRole(['admin', 'moderator']), (req: Request, res: Response) => {
+  const actor = (req as any).user as User;
+  const { id } = req.params;
+  const { status, adminResponse } = req.body;
+
+  let updatedIdea: any = null;
+
+  dbService.updateDb((db) => {
+    const idea = db.ideas.find((i) => i.id === id);
+    if (!idea) return;
+
+    if (status) idea.status = status;
+    if (adminResponse !== undefined) idea.adminResponse = adminResponse;
+    idea.updatedAt = new Date().toISOString();
+    updatedIdea = idea;
+
+    // Send notification to author
+    db.notifications.push({
+      id: 'notif-' + Date.now(),
+      userId: idea.authorId,
+      title: 'Статус вашей идеи обновлен!💡',
+      message: `Администратор оценил идею "${idea.title}". Статус: ${status || idea.status}`,
+      type: 'idea_status',
+      linkUrl: `/ideas`,
+      isRead: false,
+      createdAt: new Date().toISOString()
+    });
+  });
+
+  dbService.logAudit(actor, 'UPDATE_IDEA_STATUS', 'idea', id, `Статус: ${status}, Ответ: ${adminResponse}`);
+
+  broadcastSSE('idea_updated', { idea: updatedIdea });
+
+  res.json({ success: true, idea: updatedIdea });
+});
+
+app.delete('/api/ideas/:id', (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Требуется авторизация.' });
+
+  const { id } = req.params;
+  const db = dbService.getDb();
+  const idea = db.ideas.find((i) => i.id === id);
+
+  if (!idea) return res.status(404).json({ error: 'Идея не найдена.' });
+
+  if (idea.authorId !== user.id && user.role !== 'admin') {
+    return res.status(403).json({ error: 'Недостаточно прав для удаления идеи.' });
+  }
+
+  dbService.updateDb((d) => {
+    d.ideas = d.ideas.filter((i) => i.id !== id);
+    d.ideaVotes = d.ideaVotes.filter((v) => v.ideaId !== id);
+  });
+
+  broadcastSSE('idea_deleted', { ideaId: id });
+
+  res.json({ success: true });
 });
 
 // --- VITE DEV / PRODUCTION STATIC SERVER INTEGRATION ---

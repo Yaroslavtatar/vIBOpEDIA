@@ -13,7 +13,10 @@ import {
   AuditLog,
   SiteSettings,
   UserRole,
-  ArticleStatus
+  ArticleStatus,
+  Idea,
+  IdeaCategory,
+  IdeaStatus
 } from '../types/index.js';
 
 const DATA_DIR = path.resolve('./data');
@@ -28,6 +31,11 @@ const sqlite = new Database(DB_FILE);
 
 // Enable WAL mode for high performance
 sqlite.pragma('journal_mode = WAL');
+
+const UPLOADS_DIR = path.resolve('./uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 // Initialize SQLite Tables
 sqlite.exec(`
@@ -85,7 +93,10 @@ sqlite.exec(`
     bookmarks_count INTEGER DEFAULT 0,
     revisions_count INTEGER DEFAULT 1,
     discussions_count INTEGER DEFAULT 0,
-    featured_day INTEGER DEFAULT 0
+    featured_day INTEGER DEFAULT 0,
+    review_feedback TEXT,
+    reviewed_by TEXT,
+    reviewed_at TEXT
   );
 
   CREATE TABLE IF NOT EXISTS revisions (
@@ -173,6 +184,30 @@ sqlite.exec(`
     likes INTEGER DEFAULT 0,
     dislikes INTEGER DEFAULT 0
   );
+
+  CREATE TABLE IF NOT EXISTS ideas (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    category TEXT NOT NULL,
+    status TEXT NOT NULL,
+    author_id TEXT NOT NULL,
+    author_username TEXT NOT NULL,
+    author_display_name TEXT NOT NULL,
+    author_avatar TEXT,
+    score INTEGER DEFAULT 0,
+    admin_response TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS idea_votes (
+    idea_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    vote_type INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (idea_id, user_id)
+  );
 `);
 
 export interface DatabaseSchema {
@@ -187,6 +222,8 @@ export interface DatabaseSchema {
   auditLogs: AuditLog[];
   settings: SiteSettings;
   likesMap: Record<string, { likes: number; dislikes: number }>;
+  ideas: Idea[];
+  ideaVotes: { ideaId: string; userId: string; voteType: number; createdAt: string }[];
 }
 
 function hashPassword(password: string): string {
@@ -431,6 +468,31 @@ class DatabaseService {
       likesMap[l.article_id] = { likes: l.likes, dislikes: l.dislikes };
     }
 
+    const ideasRaw = sqlite.prepare('SELECT * FROM ideas').all() as any[];
+    const ideas: Idea[] = ideasRaw.map((i) => ({
+      id: i.id,
+      title: i.title,
+      description: i.description,
+      category: i.category,
+      status: i.status,
+      authorId: i.author_id,
+      authorUsername: i.author_username,
+      authorDisplayName: i.author_display_name,
+      authorAvatar: i.author_avatar,
+      score: i.score,
+      adminResponse: i.admin_response,
+      createdAt: i.created_at,
+      updatedAt: i.updated_at
+    }));
+
+    const ideaVotesRaw = sqlite.prepare('SELECT * FROM idea_votes').all() as any[];
+    const ideaVotes = ideaVotesRaw.map((v) => ({
+      ideaId: v.idea_id,
+      userId: v.user_id,
+      voteType: v.vote_type,
+      createdAt: v.created_at
+    }));
+
     return {
       users,
       categories,
@@ -442,7 +504,9 @@ class DatabaseService {
       bookmarks,
       auditLogs,
       settings,
-      likesMap
+      likesMap,
+      ideas,
+      ideaVotes
     };
   }
 
@@ -567,6 +631,26 @@ class DatabaseService {
       `);
       for (const [artId, val] of Object.entries(dbData.likesMap)) {
         insertLikes.run(artId, val.likes, val.dislikes);
+      }
+
+      // Ideas
+      sqlite.prepare('DELETE FROM ideas').run();
+      const insertIdea = sqlite.prepare(`
+        INSERT INTO ideas (id, title, description, category, status, author_id, author_username, author_display_name, author_avatar, score, admin_response, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      for (const i of dbData.ideas) {
+        insertIdea.run(i.id, i.title, i.description, i.category, i.status, i.authorId, i.authorUsername, i.authorDisplayName, i.authorAvatar || null, i.score, i.adminResponse || null, i.createdAt, i.updatedAt);
+      }
+
+      // Idea Votes
+      sqlite.prepare('DELETE FROM idea_votes').run();
+      const insertIdeaVote = sqlite.prepare(`
+        INSERT INTO idea_votes (idea_id, user_id, vote_type, created_at)
+        VALUES (?, ?, ?, ?)
+      `);
+      for (const v of dbData.ideaVotes) {
+        insertIdeaVote.run(v.ideaId, v.userId, v.voteType, v.createdAt);
       }
     });
 
