@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import cookieParser from 'cookie-parser';
 import { createServer as createViteServer } from 'vite';
 import fs from 'fs';
 import path from 'path';
@@ -7,16 +8,99 @@ import { dbService } from './src/server/db.js';
 import { User, Article, ArticleRevision, ArticleStatus, UserRole } from './src/types/index.js';
 
 const app = express();
+
+// Secure Cookie Parser & Body Parser
+app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 
-// Auth Token Simulation via Bearer Header or X-User-Id
+// CORS & Production Security Headers
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, OPTIONS, PATCH'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-User-Id'
+  );
+
+  // Security Headers against common attacks
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
+// In-Memory Sliding-Window Rate Limiter for Auth Routes (brute-force defense)
+interface RateLimitRecord {
+  count: number;
+  resetAt: number;
+}
+const authRateLimits = new Map<string, RateLimitRecord>();
+
+function authRateLimiter(req: Request, res: Response, next: NextFunction) {
+  const ip = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxAttempts = 20; // 20 attempts per minute
+
+  const record = authRateLimits.get(ip);
+  if (!record || now > record.resetAt) {
+    authRateLimits.set(ip, { count: 1, resetAt: now + windowMs });
+    return next();
+  }
+
+  record.count += 1;
+  if (record.count > maxAttempts) {
+    const retryAfter = Math.ceil((record.resetAt - now) / 1000);
+    res.setHeader('Retry-After', retryAfter.toString());
+    return res.status(429).json({
+      error: `Слишком много попыток. В целях безопасности подождите ${retryAfter} сек.`
+    });
+  }
+
+  next();
+}
+
+function setSessionCookie(res: Response, userId: string) {
+  const isProd = process.env.NODE_ENV === 'production';
+  res.cookie('vibopedia_session', userId, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    path: '/'
+  });
+}
+
+// Auth Token Resolution via HTTP-only Cookie, Bearer Header or X-User-Id
 function getAuthenticatedUser(req: Request): User | null {
+  // 1. Check HTTP-only secure cookie
+  const cookieToken = req.cookies?.vibopedia_session;
+  if (cookieToken) {
+    const user = dbService.getDb().users.find((u) => u.id === cookieToken || u.username === cookieToken);
+    if (user && !user.isBanned) return user;
+  }
+
+  // 2. Check Authorization Bearer Header
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
     const user = dbService.getDb().users.find((u) => u.id === token || u.username === token);
     if (user && !user.isBanned) return user;
   }
+
+  // 3. Fallback to custom header
   const customUserId = req.headers['x-user-id'] as string;
   if (customUserId) {
     const user = dbService.getDb().users.find((u) => u.id === customUserId || u.username === customUserId);
@@ -50,7 +134,7 @@ app.get('/api/auth/me', (req: Request, res: Response) => {
   res.json({ user: safeUser });
 });
 
-app.post('/api/auth/login', (req: Request, res: Response) => {
+app.post('/api/auth/login', authRateLimiter, (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Укажите email/логин и пароль.' });
@@ -62,15 +146,37 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
   if (user.isBanned) {
     return res.status(403).json({ error: `Ваш аккаунт заблокирован: ${user.banReason || 'Нарушение правил'}` });
   }
+
+  // Set HTTP-only secure session cookie
+  setSessionCookie(res, user.id);
+
   const { passwordHash, ...safeUser } = user;
   res.json({ user: safeUser, token: user.id });
 });
 
-app.post('/api/auth/register', (req: Request, res: Response) => {
+app.post('/api/auth/logout', (req: Request, res: Response) => {
+  res.clearCookie('vibopedia_session', { path: '/' });
+  res.json({ success: true, message: 'Сессия успешно завершена.' });
+});
+
+app.post('/api/auth/register', authRateLimiter, (req: Request, res: Response) => {
+  // Check if public registration is allowed by administrator
+  const settings = dbService.getDb().settings;
+  if (settings.allowPublicRegistration === false) {
+    return res.status(403).json({
+      error: 'Свободная регистрация новых пользователей временно закрыта администратором.'
+    });
+  }
+
   const { email, username, password, displayName } = req.body;
   if (!email || !username || !password) {
     return res.status(400).json({ error: 'Заполните обязательные поля: email, логин и пароль.' });
   }
+
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Пароль должен содержать как минимум 8 символов.' });
+  }
+
   if (dbService.getUserByEmail(email)) {
     return res.status(400).json({ error: 'Пользователь с таким email уже зарегистрирован.' });
   }
@@ -78,8 +184,45 @@ app.post('/api/auth/register', (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Пользователь с таким логином уже существует.' });
   }
   const newUser = dbService.createUser(email, username, password, displayName);
+
+  // Set HTTP-only secure session cookie
+  setSessionCookie(res, newUser.id);
+
   const { passwordHash, ...safeUser } = newUser;
   res.json({ user: safeUser, token: newUser.id });
+});
+
+// Change Password Endpoint (requires current password verification)
+app.post('/api/auth/change-password', authRateLimiter, (req: Request, res: Response) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Требуется авторизация.' });
+
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Укажите текущий и новый пароль.' });
+  }
+
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'Новый пароль должен содержать не менее 8 символов.' });
+  }
+
+  if (confirmPassword && newPassword !== confirmPassword) {
+    return res.status(400).json({ error: 'Подтверждение пароля не совпадает с новым паролем.' });
+  }
+
+  // Verify current password against database
+  const verified = dbService.verifyUserPassword(user.username, currentPassword);
+  if (!verified) {
+    return res.status(400).json({ error: 'Неверно указан текущий пароль.' });
+  }
+
+  const changed = dbService.changeUserPassword(user.id, newPassword);
+  if (!changed) {
+    return res.status(500).json({ error: 'Не удалось обновить пароль в базе данных.' });
+  }
+
+  dbService.logAudit(user, 'CHANGE_PASSWORD', 'user', user.id, 'Пользователь успешно изменил пароль');
+  res.json({ success: true, message: 'Пароль успешно изменен.' });
 });
 
 // Category Routes
@@ -806,14 +949,19 @@ app.put('/api/admin/users/:id/role', requireRole(['admin']), (req: Request, res:
   const { role } = req.body;
   const actor = (req as any).user as User;
 
-  dbService.updateDb((db) => {
-    const u = db.users.find((usr) => usr.id === id);
-    if (u) {
-      u.role = role as UserRole;
-    }
-  });
+  const target = dbService.getUserById(id);
+  if (!target) return res.status(404).json({ error: 'Пользователь не найден' });
 
-  dbService.logAudit(actor, 'CHANGE_USER_ROLE', 'user', id, `Новая роль: ${role}`);
+  if (target.id === 'usr-admin' || target.username === 'admin') {
+    return res.status(403).json({ error: 'Нельзя изменить или понизить роль главного администратора.' });
+  }
+
+  const updated = dbService.updateUserRole(id, role as UserRole);
+  if (!updated) {
+    return res.status(400).json({ error: 'Не удалось обновить роль пользователя.' });
+  }
+
+  dbService.logAudit(actor, 'CHANGE_USER_ROLE', 'user', id, `Новая роль для @${target.username}: ${role}`);
   res.json({ success: true });
 });
 
@@ -827,8 +975,14 @@ app.post('/api/admin/users/:id/ban', requireRole(['admin']), (req: Request, res:
   const { reason } = req.body;
   const actor = (req as any).user as User;
 
+  const target = dbService.getUserById(id);
+  if (!target) return res.status(404).json({ error: 'Пользователь не найден' });
+  if (target.id === 'usr-admin' || target.username === 'admin' || target.role === 'admin') {
+    return res.status(403).json({ error: 'Нельзя заблокировать учетную запись администратора.' });
+  }
+
   dbService.banUser(id, reason);
-  dbService.logAudit(actor, 'BAN_USER', 'user', id, `Пользователь заблокирован. Причина: ${reason || 'Нарушение правил'}`);
+  dbService.logAudit(actor, 'BAN_USER', 'user', id, `Пользователь @${target.username} заблокирован. Причина: ${reason || 'Нарушение правил'}`);
   res.json({ success: true });
 });
 
@@ -837,8 +991,11 @@ app.post('/api/admin/users/:id/unban', requireRole(['admin']), (req: Request, re
   const { id } = req.params;
   const actor = (req as any).user as User;
 
+  const target = dbService.getUserById(id);
+  if (!target) return res.status(404).json({ error: 'Пользователь не найден' });
+
   dbService.unbanUser(id);
-  dbService.logAudit(actor, 'UNBAN_USER', 'user', id, 'Пользователь разблокирован');
+  dbService.logAudit(actor, 'UNBAN_USER', 'user', id, `Пользователь @${target.username} разблокирован`);
   res.json({ success: true });
 });
 
@@ -847,7 +1004,13 @@ app.post('/api/admin/users/:id/kick', requireRole(['admin']), (req: Request, res
   const { id } = req.params;
   const actor = (req as any).user as User;
 
-  dbService.logAudit(actor, 'KICK_USER', 'user', id, 'Сессия пользователя принудительно завершена');
+  const target = dbService.getUserById(id);
+  if (!target) return res.status(404).json({ error: 'Пользователь не найден' });
+  if (target.id === 'usr-admin' || target.username === 'admin') {
+    return res.status(403).json({ error: 'Нельзя сбросить сессию главного администратора.' });
+  }
+
+  dbService.logAudit(actor, 'KICK_USER', 'user', id, `Сессия пользователя @${target.username} принудительно завершена`);
   res.json({ success: true, message: 'Сессия пользователя сброшена' });
 });
 
@@ -858,7 +1021,7 @@ app.delete('/api/admin/users/:id', requireRole(['admin']), (req: Request, res: R
 
   const target = dbService.getUserById(id);
   if (!target) return res.status(404).json({ error: 'Пользователь не найден' });
-  if (target.role === 'admin') {
+  if (target.id === 'usr-admin' || target.username === 'admin' || target.role === 'admin') {
     return res.status(403).json({ error: 'Нельзя удалить учетную запись администратора' });
   }
 
@@ -877,7 +1040,15 @@ app.get('/api/settings', (req: Request, res: Response) => {
 // Update Settings (Admin only)
 app.put('/api/admin/settings', requireRole(['admin']), (req: Request, res: Response) => {
   const actor = (req as any).user as User;
-  const { githubUrl, telegramUrl, siteName, siteDescription, autoPublishForTrusted, moderationRequiredForNew } = req.body;
+  const {
+    githubUrl,
+    telegramUrl,
+    siteName,
+    siteDescription,
+    autoPublishForTrusted,
+    moderationRequiredForNew,
+    allowPublicRegistration
+  } = req.body;
 
   dbService.updateDb((db) => {
     if (githubUrl !== undefined) db.settings.githubUrl = githubUrl;
@@ -886,9 +1057,16 @@ app.put('/api/admin/settings', requireRole(['admin']), (req: Request, res: Respo
     if (siteDescription !== undefined) db.settings.siteDescription = siteDescription;
     if (autoPublishForTrusted !== undefined) db.settings.autoPublishForTrusted = Boolean(autoPublishForTrusted);
     if (moderationRequiredForNew !== undefined) db.settings.moderationRequiredForNew = Boolean(moderationRequiredForNew);
+    if (allowPublicRegistration !== undefined) db.settings.allowPublicRegistration = Boolean(allowPublicRegistration);
   });
 
-  dbService.logAudit(actor, 'UPDATE_SETTINGS', 'settings', 'main_settings', `Обновлены пути (GitHub: ${githubUrl || 'не изменен'}, Telegram: ${telegramUrl || 'не изменен'})`);
+  dbService.logAudit(
+    actor,
+    'UPDATE_SETTINGS',
+    'settings',
+    'main_settings',
+    `Обновлены настройки (Регистрация открыта: ${allowPublicRegistration ?? 'не изменено'}, GitHub: ${githubUrl || 'не изменен'}, Telegram: ${telegramUrl || 'не изменен'})`
+  );
   res.json({ settings: dbService.getDb().settings });
 });
 

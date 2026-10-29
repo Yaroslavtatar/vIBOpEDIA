@@ -37,6 +37,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
+    credentials: 'include',
     headers
   });
 
@@ -60,6 +61,15 @@ export const api = {
     request<{ user: User; token: string }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, username, password: pass, displayName })
+    }),
+  logout: () =>
+    request<{ success: boolean }>('/auth/logout', {
+      method: 'POST'
+    }),
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword?: string) =>
+    request<{ success: boolean; message: string }>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
     }),
 
   // Categories

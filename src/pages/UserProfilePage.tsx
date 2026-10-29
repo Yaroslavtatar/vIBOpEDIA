@@ -16,7 +16,11 @@ import {
   AlertCircle,
   Save,
   Shield,
-  FileText
+  FileText,
+  Lock,
+  KeyRound,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 interface UserProfilePageProps {
@@ -37,6 +41,15 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ username, onNa
   const [bioInput, setBioInput] = useState('');
   const [avatarUrlInput, setAvatarUrlInput] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Change Password Form State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   const isOwnAccount = currentUser && currentUser.username.toLowerCase() === username.toLowerCase();
 
@@ -81,6 +94,41 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ username, onNa
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
     refreshUser();
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (!currentPassword) {
+      setPasswordError('Введите ваш текущий пароль для подтверждения.');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError('Новый пароль должен содержать как минимум 8 символов.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Новый пароль и его подтверждение не совпадают.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await api.changePassword(currentPassword, newPassword, confirmPassword);
+      setPasswordSuccess(res.message || 'Пароль учетной записи успешно изменен!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setPasswordSuccess(''), 5000);
+    } catch (err: any) {
+      setPasswordError(err.message || 'Ошибка смены пароля. Проверьте правильность текущего пароля.');
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   if (loading) {
@@ -308,6 +356,109 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ username, onNa
               <span>Сохранить настройки</span>
             </button>
           </form>
+
+          {/* Security & Password Change Section */}
+          <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                <Lock className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="font-bold font-serif text-base text-slate-900 dark:text-white">
+                  Безопасность и смена пароля
+                </h4>
+                <p className="text-xs text-slate-500">
+                  Для смены пароля подтвердите ваш текущий пароль и укажите новый
+                </p>
+              </div>
+            </div>
+
+            {passwordSuccess && (
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{passwordSuccess}</span>
+              </div>
+            )}
+
+            {passwordError && (
+              <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-2xl text-xs font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{passwordError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleChangePassword} className="space-y-4 max-w-xl">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                  Текущий пароль *
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Введите ваш действующий пароль"
+                    className="w-full pl-4 pr-11 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                    Новый пароль *
+                  </label>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Минимум 8 символов"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                    Повторите новый пароль *
+                  </label>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Повторите новый пароль"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={passwordLoading}
+                className="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-md transition"
+              >
+                {passwordLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <KeyRound className="w-4 h-4" />
+                    <span>Обновить пароль</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>

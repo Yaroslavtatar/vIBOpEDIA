@@ -187,6 +187,35 @@ async function main() {
     if (!pkg.dependencies['tsx']) {
       throw new Error('В dependencies отсутствует tsx (требуется для npm start в контейнере)');
     }
+    if (!pkg.dependencies['cookie-parser']) {
+      throw new Error('В dependencies отсутствует cookie-parser (требуется для безопасных HTTP-only cookie сессий)');
+    }
+  });
+
+  // Test 6: Security and registration protection configuration
+  runTest('6. Проверка стандартов безопасности и защиты аккаунта администратора', () => {
+    const testDbPath = path.resolve('./data/vibopedia.db');
+    if (!fs.existsSync(testDbPath)) {
+      throw new Error(`Файл базы данных ${testDbPath} не найден`);
+    }
+
+    const db = new Database(testDbPath, { readonly: true });
+    const admin = db.prepare("SELECT * FROM users WHERE username = 'admin'").get() as any;
+    if (!admin) {
+      throw new Error("Суперадминистратор 'admin' отсутствует");
+    }
+    if (admin.role !== 'admin' || admin.is_banned) {
+      throw new Error("Главный администратор не должен быть заблокирован или лишен прав");
+    }
+
+    const settingsRow = db.prepare("SELECT * FROM settings WHERE key = 'main_settings'").get() as any;
+    if (settingsRow) {
+      const parsed = JSON.parse(settingsRow.value_json);
+      if (parsed.allowPublicRegistration === undefined) {
+        throw new Error("В настройках платформы должно быть поле allowPublicRegistration");
+      }
+    }
+    db.close();
   });
 
   // Summary

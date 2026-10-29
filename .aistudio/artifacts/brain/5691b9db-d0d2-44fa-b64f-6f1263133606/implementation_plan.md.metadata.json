@@ -1,0 +1,6 @@
+{
+  "summary":  "План внедрения смены паролей, безопасности production-уровня (HTTP-only cookies, CORS, Rate Limiting, Helmet), защиты супер-админа, блокировки регистрации и очистки интерфейса от тестовых подсказок.",
+  "updatedAt":  "2026-10-29T03:23:47.905346894Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

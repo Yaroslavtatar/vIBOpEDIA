@@ -51,6 +51,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [siteDescription, setSiteDescription] = useState('');
   const [autoPublishForTrusted, setAutoPublishForTrusted] = useState(true);
   const [moderationRequiredForNew, setModerationRequiredForNew] = useState(true);
+  const [allowPublicRegistration, setAllowPublicRegistration] = useState(true);
 
   const [activeTab, setActiveTab] = useState<'stats' | 'categories' | 'moderation' | 'users' | 'settings' | 'audit'>('stats');
   const [loading, setLoading] = useState(true);
@@ -81,6 +82,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         setSiteDescription(settingsRes.settings.siteDescription || 'Свободная научно-популярная энциклопедия о вайб-кодинге');
         setAutoPublishForTrusted(settingsRes.settings.autoPublishForTrusted ?? true);
         setModerationRequiredForNew(settingsRes.settings.moderationRequiredForNew ?? true);
+        setAllowPublicRegistration(settingsRes.settings.allowPublicRegistration ?? true);
       }
 
       if (modRes.pendingArticles.length > 0) {
@@ -178,9 +180,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         siteName: siteName.trim(),
         siteDescription: siteDescription.trim(),
         autoPublishForTrusted,
-        moderationRequiredForNew
+        moderationRequiredForNew,
+        allowPublicRegistration
       });
-      setActionSuccess('Настройки платформы, ссылки на GitHub и Telegram успешно обновлены!');
+      setActionSuccess('Настройки платформы, доступ к регистрации, ссылки на GitHub и Telegram успешно обновлены!');
       setTimeout(() => setActionSuccess(''), 3000);
     } catch (err: any) {
       setErrorMsg(err.message || 'Ошибка сохранения настроек');
@@ -498,7 +501,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {users.map((usr) => {
                   const roleInfo = getRoleBadgeInfo(usr.role);
-                  const isRootAdmin = usr.role === 'admin';
+                  const isRootAdmin = usr.username === 'admin' || usr.id === 'usr-admin';
 
                   return (
                     <tr key={usr.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
@@ -508,8 +511,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           <div className="flex items-center gap-1.5">
                             <span>{usr.displayName}</span>
                             {isRootAdmin && (
-                              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 rounded">
-                                Root Admin
+                              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/80 border border-amber-500/30 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                <Shield className="w-3 h-3 text-amber-500" />
+                                <span>Суперадминистратор</span>
                               </span>
                             )}
                           </div>
@@ -687,6 +691,36 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 placeholder="Свободная научно-популярная энциклопедия о вайб-кодинге"
                 className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+
+            {/* Registration Control Toggle */}
+            <div className="md:col-span-2 p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                    Свободная регистрация новых пользователей
+                  </h4>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
+                  {allowPublicRegistration
+                    ? 'Открытая регистрация активна: любой желающий может самостоятельно зарегистрироваться на платформе.'
+                    : 'Свободная регистрация заблокирована: форма создания новых аккаунтов закрыта для гостей.'}
+                </p>
+              </div>
+
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                <input
+                  type="checkbox"
+                  checked={allowPublicRegistration}
+                  onChange={(e) => setAllowPublicRegistration(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span className="ml-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {allowPublicRegistration ? 'Регистрация открыта' : 'Регистрация закрыта'}
+                </span>
+              </label>
             </div>
           </div>
 

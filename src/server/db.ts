@@ -243,7 +243,7 @@ function purgeMockDataAndEnsureAdmin() {
     );
   }
 
-  // Ensure default site settings with configurable githubUrl and telegramUrl
+  // Ensure default site settings with configurable githubUrl, telegramUrl and allowPublicRegistration
   const existingSettings = sqlite.prepare('SELECT value_json FROM settings WHERE key = ?').get('main_settings') as any;
   if (!existingSettings) {
     sqlite.prepare('INSERT INTO settings (key, value_json) VALUES (?, ?)').run('main_settings', JSON.stringify({
@@ -256,6 +256,16 @@ function purgeMockDataAndEnsureAdmin() {
       githubUrl: 'https://github.com',
       telegramUrl: 'https://t.me'
     }));
+  } else {
+    try {
+      const parsed = JSON.parse(existingSettings.value_json);
+      if (parsed.allowPublicRegistration === undefined) {
+        parsed.allowPublicRegistration = true;
+        sqlite.prepare('UPDATE settings SET value_json = ? WHERE key = ?').run(JSON.stringify(parsed), 'main_settings');
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 }
 
@@ -607,14 +617,46 @@ class DatabaseService {
     return newUser;
   }
 
-  public banUser(userId: string, reason?: string) {
+  public changeUserPassword(userId: string, newPassword: string): boolean {
+    const hashed = hashPassword(newPassword);
+    let updated = false;
     this.updateDb((db) => {
       const u = db.users.find((usr) => usr.id === userId);
-      if (u && u.role !== 'admin') {
-        u.isBanned = true;
-        u.banReason = reason || 'Нарушение правил сообщества';
+      if (u) {
+        u.passwordHash = hashed;
+        updated = true;
       }
     });
+    return updated;
+  }
+
+  public updateUserRole(userId: string, newRole: UserRole): boolean {
+    let updated = false;
+    this.updateDb((db) => {
+      const u = db.users.find((usr) => usr.id === userId);
+      if (u) {
+        // Root administrator account cannot be demoted or changed
+        if (u.id === 'usr-admin' || u.username === 'admin') {
+          return;
+        }
+        u.role = newRole;
+        updated = true;
+      }
+    });
+    return updated;
+  }
+
+  public banUser(userId: string, reason?: string): boolean {
+    let success = false;
+    this.updateDb((db) => {
+      const u = db.users.find((usr) => usr.id === userId);
+      if (u && u.id !== 'usr-admin' && u.username !== 'admin' && u.role !== 'admin') {
+        u.isBanned = true;
+        u.banReason = reason || 'Нарушение правил сообщества';
+        success = true;
+      }
+    });
+    return success;
   }
 
   public unbanUser(userId: string) {
@@ -631,7 +673,7 @@ class DatabaseService {
     let success = false;
     this.updateDb((db) => {
       const idx = db.users.findIndex((usr) => usr.id === userId);
-      if (idx >= 0 && db.users[idx].role !== 'admin') {
+      if (idx >= 0 && db.users[idx].id !== 'usr-admin' && db.users[idx].username !== 'admin' && db.users[idx].role !== 'admin') {
         db.users.splice(idx, 1);
         db.bookmarks = db.bookmarks.filter((b) => b.userId !== userId);
         db.notifications = db.notifications.filter((n) => n.userId !== userId);

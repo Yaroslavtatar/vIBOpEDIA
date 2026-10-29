@@ -20,16 +20,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshUser = async () => {
     try {
-      const token = getStoredToken();
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
       const data = await api.getMe();
-      setUser(data.user);
+      if (data.user) {
+        setUser(data.user);
+        if (!getStoredToken()) {
+          setStoredToken(data.user.id);
+        }
+      } else {
+        setUser(null);
+        setStoredToken(null);
+      }
     } catch (err) {
-      console.error('Failed to restore session:', err);
       setUser(null);
       setStoredToken(null);
     } finally {
@@ -53,7 +54,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(data.user);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.logout();
+    } catch (e) {
+      // ignore
+    }
     setStoredToken(null);
     setUser(null);
   };

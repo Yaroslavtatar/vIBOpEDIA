@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.js';
+import { api } from '../api/client.js';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -13,7 +14,8 @@ import {
   ArrowRight,
   Sparkles,
   CheckCircle2,
-  KeyRound
+  KeyRound,
+  UserX
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -32,6 +34,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [allowRegistration, setAllowRegistration] = useState(true);
+
+  useEffect(() => {
+    if (isOpen) {
+      api.getSettings().then((res) => {
+        if (res.settings && res.settings.allowPublicRegistration !== undefined) {
+          setAllowRegistration(res.settings.allowPublicRegistration);
+        }
+      }).catch(() => {});
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -174,7 +187,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 >
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                      Email или логин администратора
+                      Email или логин
                     </label>
                     <div className="relative">
                       <Mail className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
@@ -183,7 +196,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         required
                         value={emailOrUsername}
                         onChange={(e) => setEmailOrUsername(e.target.value)}
-                        placeholder="admin или email..."
+                        placeholder="Логин или email..."
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition"
                       />
                     </div>
@@ -214,6 +227,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       </button>
                     </div>
                   </div>
+                </motion.div>
+              ) : !allowRegistration ? (
+                <motion.div
+                  key="register-blocked"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  className="p-5 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 rounded-2xl text-center space-y-2.5 my-2"
+                >
+                  <UserX className="w-8 h-8 mx-auto text-amber-500" />
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">Регистрация временно закрыта</h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Администрация платформы приостановила свободную регистрацию новых пользователей. Если у вас уже есть аккаунт, перейдите на вкладку «Вход».
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('login')}
+                    className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-xs"
+                  >
+                    Перейти ко входу
+                  </button>
                 </motion.div>
               ) : (
                 <motion.div
@@ -273,13 +307,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                      Пароль *
+                      Пароль (минимум 8 символов) *
                     </label>
                     <div className="relative">
                       <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
+                        minLength={8}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Придумайте надежный пароль"
@@ -299,31 +334,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </AnimatePresence>
 
             {/* Submit Button with Hover & Press Animations */}
-            <motion.button
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.985 }}
-              type="submit"
-              disabled={loading}
-              className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>{activeTab === 'login' ? 'Войти в аккаунт' : 'Создать учетную запись'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </motion.button>
+            {!(activeTab === 'register' && !allowRegistration) && (
+              <motion.button
+                whileHover={{ scale: 1.015 }}
+                whileTap={{ scale: 0.985 }}
+                type="submit"
+                disabled={loading}
+                className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>{activeTab === 'login' ? 'Войти в аккаунт' : 'Создать учетную запись'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </motion.button>
+            )}
           </form>
-
-          {/* Quick Notice for Admin */}
-          <div className="mt-5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
-            <KeyRound className="w-4 h-4 text-amber-500 shrink-0" />
-            <span>
-              Учетная запись администратора: логин <strong className="text-slate-700 dark:text-slate-200 font-mono">admin</strong>, пароль <strong className="text-slate-700 dark:text-slate-200 font-mono">admin123</strong>
-            </span>
-          </div>
         </div>
       </motion.div>
     </div>
