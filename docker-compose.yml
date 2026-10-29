@@ -1,26 +1,47 @@
 version: '3.8'
 
+# ==============================================================================
+# Docker Compose for Vibopedia (Production & Testing)
+# ==============================================================================
+
 services:
+  # Main application service (Production)
   vibopedia:
     build:
       context: .
       dockerfile: Dockerfile
+      target: runner
     container_name: vibopedia
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     environment:
-      - PORT=3000
       - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_PATH=/app/data/vibopedia.db
     volumes:
       - vibopedia_data:/app/data
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/categories"]
-      interval: 15s
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/settings || exit 1"]
+      interval: 20s
       timeout: 5s
       retries: 3
       start_period: 10s
 
+  # Automated test service for verifying the build & schemas inside Docker container
+  vibopedia-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    container_name: vibopedia-build-test
+    command: npm run test:build
+    environment:
+      - NODE_ENV=test
+    profiles:
+      - test
+
 volumes:
   vibopedia_data:
+    name: vibopedia_data
     driver: local

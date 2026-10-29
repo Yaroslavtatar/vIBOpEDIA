@@ -21,7 +21,9 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-const DB_FILE = path.join(DATA_DIR, 'vibopedia.db');
+const DB_FILE = process.env.DATABASE_PATH
+  ? path.resolve(process.env.DATABASE_PATH)
+  : path.join(DATA_DIR, 'vibopedia.db');
 const sqlite = new Database(DB_FILE);
 
 // Enable WAL mode for high performance

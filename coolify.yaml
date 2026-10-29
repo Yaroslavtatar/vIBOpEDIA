@@ -10,5 +10,5 @@ services:
     volumes:
       - /app/data
     healthcheck:
-      path: /api/categories
+      path: /api/settings
       port: 3000
